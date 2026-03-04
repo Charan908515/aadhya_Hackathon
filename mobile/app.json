@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Fraud Shield",
+    "slug": "fraud-shield",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1021"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "permissions": [
+        "READ_SMS",
+        "READ_SMS"
+      ],
+      "package": "com.anonymous.fraudshield"
+    }
+  }
+}

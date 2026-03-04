@@ -1,0 +1,81 @@
+text,label,fraud_type
+"Congratulations! You are selected as lucky winner. Claim your lottery prize now.",1,Lottery Scam
+"Dear user, your KYC is pending. Click the link to verify your bank account urgently.",1,Phishing
+"UPI collect request received for Rs 25000. Enter UPI PIN to complete payment.",1,UPI Fraud
+"Job offer confirmed. Pay registration fee of Rs 1500 for interview slot.",1,Job Scam
+"Double your money in 7 days with guaranteed crypto return. Join now.",1,Investment Scam
+"Instant loan approved without documents. Pay processing fee to release amount.",1,Loan Scam
+"Final warning: account blocked. Update login credentials at http://verify-account.co",1,Phishing
+"You won jackpot of 25 lakh. Pay tax charge and claim reward immediately.",1,Lottery Scam
+"Urgent action required: click bit.ly/secure-kyc to avoid bank account suspension.",1,Phishing
+"We are hiring part-time typing workers. Deposit security amount to start.",1,Job Scam
+"Claim cashback reward now. Share OTP to confirm transfer.",1,UPI Fraud
+"Your UPI account will be deactivated. Verify PIN now and pay reactivation charge.",1,UPI Fraud
+"Investment tip: guaranteed 5x profit. Transfer funds to activate VIP plan.",1,Investment Scam
+"Loan disbursal waiting. Send advance processing amount of Rs 1999.",1,Loan Scam
+"Hello winner, your mobile number got selected in draw. Claim gift by fee payment.",1,Lottery Scam
+"Bank alert: verify PAN and Aadhaar through attached link immediately.",1,Phishing
+"Work from home job. Daily salary Rs 5000. Pay onboarding fee first.",1,Job Scam
+"Get personal loan in 5 minutes. No cibil check. Pay admin fee now.",1,Loan Scam
+"Your package is held. Pay small delivery charge through UPI link.",1,UPI Fraud
+"Profit assured stock plan. Send 10000 and get 30000 tomorrow.",1,Investment Scam
+"Lottery department notice: process your claim reward with urgent response.",1,Lottery Scam
+"Confirm bank verification in 30 minutes or account will freeze.",1,Phishing
+"HR final selection done. Submit training fee to receive appointment letter.",1,Job Scam
+"Click this short URL bit.ly/upi-help to avoid payment failure.",1,Phishing
+"Your account won online contest. Share OTP to receive amount.",1,UPI Fraud
+"Exclusive investment opportunity, minimum 2000 gives guaranteed monthly return.",1,Investment Scam
+"Approved salary advance loan. Send stamp duty charges before release.",1,Loan Scam
+"Bank statement mismatch. Login now at www.update-safe-bank.com",1,Phishing
+"Lottery claims office: winner ID matched. Pay verification charge.",1,Lottery Scam
+"Part-time survey job available. Registration amount mandatory.",1,Job Scam
+"Dear customer, recharge failure refund pending. Click link and enter PIN.",1,UPI Fraud
+"Mutual fund insider trick with no risk and fixed profit.",1,Investment Scam
+"Loan app team: your file approved. Pay legal fee now.",1,Loan Scam
+"Security notice: suspicious login. Confirm details through this link.",1,Phishing
+"Won mega draw today. Claim now and submit processing fee.",1,Lottery Scam
+"Digital marketing internship from home. Pay kit fee before joining.",1,Job Scam
+"Send UPI collect approval for receiving your subsidy amount.",1,UPI Fraud
+"Crypto doubling plan. Guaranteed return in 24 hours.",1,Investment Scam
+"Emergency loan without documents. Advance payment required.",1,Loan Scam
+"Account verification pending. Click and update netbanking password.",1,Phishing
+"Festival lucky winner! Pay shipping and collect expensive gift.",1,Lottery Scam
+"Remote data entry work available. Deposit ID verification charge.",1,Job Scam
+"Payment declined. Open link and reset UPI pin.",1,UPI Fraud
+"Profit sharing business with guaranteed income and no risk.",1,Investment Scam
+"Loan approved instantly. Share bank statement and pay file fee.",1,Loan Scam
+"Dear customer, your electricity bill is overdue. Pay before tonight to avoid disconnection.",0,Legit
+"Your OTP for account login is 629311. Do not share with anyone.",0,Legit
+"A/c XX1234 credited with INR 14,500 by NEFT.",0,Legit
+"Your order has been shipped and will be delivered tomorrow.",0,Legit
+"Meeting rescheduled to 3 PM. Please confirm attendance.",0,Legit
+"Thank you for using UPI. Transaction of Rs 550 completed successfully.",0,Legit
+"Your monthly salary of Rs 42,000 has been credited.",0,Legit
+"Reminder: EMI due on 10th. Pay through official banking app.",0,Legit
+"Train ticket booked successfully. PNR details sent to your email.",0,Legit
+"Package delivered at your doorstep. Rate your experience.",0,Legit
+"Welcome to our service. Contact support for help.",0,Legit
+"Your internet data pack expires tomorrow. Recharge in the official app.",0,Legit
+"Flight check-in opened. Use airline app to download boarding pass.",0,Legit
+"Insurance policy premium received. Next due date is 12/08.",0,Legit
+"Utility payment of Rs 870 successful via trusted app.",0,Legit
+"Your account statement for February is ready.",0,Legit
+"Appointment confirmed with Dr. Mehta at 11:30 AM.",0,Legit
+"School notice: Parent meeting on Friday at 4 PM.",0,Legit
+"Traffic challan issued. View details in state transport portal app.",0,Legit
+"Recharge successful. Talktime added to your number.",0,Legit
+"Thank you for shopping. Invoice available in your account.",0,Legit
+"Bus pass renewed successfully for this month.",0,Legit
+"Your food order is being prepared.",0,Legit
+"Online class starts at 8 AM. Join on official portal.",0,Legit
+"Bank: cash withdrawal of Rs 2000 at ATM completed.",0,Legit
+"Aadhaar update request received and under process.",0,Legit
+"Safe banking tip: never share OTP with anyone.",0,Legit
+"Courier delayed due to rain. Expected delivery tomorrow.",0,Legit
+"Your UPI transaction to Ravi was successful.",0,Legit
+"Interest credited to your savings account.",0,Legit
+"Credit card bill generated. Total due Rs 1840.",0,Legit
+"Gym membership renewed. Thank you.",0,Legit
+"Municipal tax payment acknowledged.",0,Legit
+"Team outing tomorrow at 6 PM. Reply yes if joining.",0,Legit
+"Bank alert: login from your registered device detected.",0,Legit

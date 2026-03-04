@@ -1,0 +1,63 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_SMS"/>
+  <uses-permission android:name="android.permission.RECEIVE_MMS"/>
+  <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+  <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH"/>
+  <uses-permission android:name="android.permission.SEND_SMS"/>
+  <uses-permission android:name="android.permission.WRITE_SMS"/>
+  <uses-permission android:name="android.permission.READ_CELL_BROADCAST"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
+    </intent>
+  </queries>
+  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true" android:enableOnBackInvokedCallback="false">
+    <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
+    <receiver
+      android:name=".SmsReceiver"
+      android:exported="true">
+      <intent-filter android:priority="999">
+        <action android:name="android.provider.Telephony.SMS_DELIVER"/>
+      </intent-filter>
+      <intent-filter android:priority="999">
+        <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+      </intent-filter>
+      <intent-filter android:priority="999">
+        <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER"/>
+        <data android:mimeType="application/vnd.wap.mms-message"/>
+      </intent-filter>
+    </receiver>
+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.SENDTO"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="sms"/>
+        <data android:scheme="smsto"/>
+        <data android:scheme="mms"/>
+        <data android:scheme="mmsto"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="sms"/>
+        <data android:scheme="smsto"/>
+        <data android:scheme="mms"/>
+        <data android:scheme="mmsto"/>
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
