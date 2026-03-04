@@ -5,7 +5,7 @@ package.domain = org.local
 source.dir = app
 source.include_exts = py,png,jpg,kv,json,pkl,db,csv,txt
 version = 0.1
-  
+   
 requirements = python3,kivy,pyjnius,plyer
 orientation = portrait
 fullscreen = 0
