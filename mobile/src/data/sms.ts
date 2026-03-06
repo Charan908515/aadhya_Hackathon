@@ -44,7 +44,7 @@ export const smsReceiverModule =
   Platform.OS === "android" ? NativeModules.SmsReceiver ?? null : null;
 
 export const smsEventEmitter =
-  Platform.OS === "android" && smsReceiverModule
+  Platform.OS === "android" && smsReceiverModule && NativeModules.SmsReceiver
     ? new NativeEventEmitter(smsReceiverModule)
     : null;
 
@@ -158,15 +158,73 @@ function analyzeWithLiteModel(message: string): { probability: number; keywords:
   return { probability, keywords };
 }
 
+const KEYWORD_CATEGORIES: Record<string, string[]> = {
+  "UPI Fraud": [
+    "upi", "collect request", "upi pin", "payment request", "pay now", "money transfer", "gpay", "phonepe", "paytm",
+  ],
+  "Job Scam": [
+    "job offer", "work from home", "data entry", "interview", "registration fee", "training fee", "urgent hiring",
+  ],
+  "Lottery Scam": [
+    "lottery", "winner", "won", "claim reward", "jackpot", "prize", "lucky draw",
+  ],
+  "Phishing": [
+    "verify account", "bank verification", "click link", "login", "kyc", "suspended", "update details", "urgent action",
+  ],
+  "Investment Scam": [
+    "double money", "guaranteed return", "crypto tip", "investment plan", "profit in 24 hours", "trading signal",
+  ],
+  "Loan Scam": [
+    "instant loan", "no cibil", "processing fee", "loan approved", "disbursal", "advance payment",
+  ],
+};
+
+function detectFraudType(text: string): string {
+  const textL = text.toLowerCase();
+  const scores: Record<string, number> = {};
+
+  for (const [category, phrases] of Object.entries(KEYWORD_CATEGORIES)) {
+    let score = 0;
+    for (const p of phrases) {
+      if (textL.includes(p)) {
+        score += 2;
+      } else {
+        const pWords = p.split(" ");
+        if (pWords.every(w => textL.includes(w))) {
+          score += 1;
+        }
+      }
+    }
+    scores[category] = score;
+  }
+
+  const urlRe = /https?:\/\/\S+|www\.\S+/i;
+  if (urlRe.test(textL) && (textL.includes("bank") || textL.includes("verify") || textL.includes("login"))) {
+    scores["Phishing"] = (scores["Phishing"] || 0) + 2;
+  }
+
+  let bestCategory = "Other Scam";
+  let maxScore = 0;
+  for (const [category, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      bestCategory = category;
+    }
+  }
+
+  return maxScore > 0 ? bestCategory : "Other Scam";
+}
+
 export function localAnalyzeMessage(message: string): SpamVerdict {
   const { probability, keywords } = analyzeWithLiteModel(message);
   const score = Math.round(probability * 100);
+  const detectedType = detectFraudType(message);
 
   if (probability >= 0.7) {
     return {
       level: "SPAM",
       score,
-      fraudType: "High Risk Scam",
+      fraudType: detectedType !== "Other Scam" ? detectedType : "High Risk Scam",
       explanation: "On-device model detected strong scam-like language patterns.",
       suspiciousKeywords: keywords,
     };
@@ -176,7 +234,7 @@ export function localAnalyzeMessage(message: string): SpamVerdict {
     return {
       level: "SUSPICIOUS",
       score,
-      fraudType: "Suspicious Message",
+      fraudType: detectedType !== "Other Scam" ? detectedType : "Suspicious Message",
       explanation: "On-device model detected multiple risky signals.",
       suspiciousKeywords: keywords,
     };

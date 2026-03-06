@@ -12,3 +12,36 @@
 -keep class com.facebook.react.turbomodule.** { *; }
 
 # Add any project specific keep options here:
+# Add project specific ProGuard rules here.
+
+# Expo modules
+-keep class expo.modules.** { *; }
+-keepclassmembers class * {
+  @expo.modules.core.interfaces.ExpoProp *;
+}
+-keepclassmembers class * {
+  @expo.modules.core.interfaces.ExpoMethod *;
+}
+
+# Expo Image Picker specifically
+-keep class expo.modules.imagepicker.** { *; }
+
+# React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+
+# Keep all native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# General
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
+
+# Don't warn about missing classes
+-dontwarn expo.modules.**
+-dontwarn com.facebook.react.**

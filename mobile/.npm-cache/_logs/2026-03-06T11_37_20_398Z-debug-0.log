@@ -1,0 +1,20 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.3
+2 info using node@v22.19.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:c:\Users\nchar\OneDrive\Desktop\Hackathon\mobile\.npmrc
+5 silly config load:file:C:\Users\nchar\.npmrc
+6 silly config load:file:C:\Users\nchar\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm view @expo/vector-icons description dist-tags.latest homepage version time
+8 verbose argv "view" "--json" "--" "@expo/vector-icons" "description" "dist-tags.latest" "homepage" "version" "time"
+9 verbose logfile logs-max:10 dir:C:\Users\nchar\OneDrive\Desktop\Hackathon\mobile\.npm-cache\_logs\2026-03-06T11_37_20_398Z-
+10 verbose logfile C:\Users\nchar\OneDrive\Desktop\Hackathon\mobile\.npm-cache\_logs\2026-03-06T11_37_20_398Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 http fetch GET 200 https://registry.npmjs.org/@expo%2fvector-icons 956ms (cache miss)
+14 verbose cwd c:\Users\nchar\OneDrive\Desktop\Hackathon\mobile
+15 verbose os Windows_NT 10.0.26200
+16 verbose node v22.19.0
+17 verbose npm  v10.9.3
+18 verbose exit 0
+19 info ok

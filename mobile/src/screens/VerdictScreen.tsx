@@ -93,6 +93,11 @@ export default function VerdictScreen({ navigation, route }: Props) {
               <Text style={styles.predictionLabel} numberOfLines={1}>
                 {meta.label} · {meta.score}% risk
               </Text>
+              {message?.verdict.fraudType && (
+                <Text style={styles.fraudTypeText}>
+                  Type: {message.verdict.fraudType}
+                </Text>
+              )}
             </View>
           </View>
           <Text style={styles.predictionExplain}>
@@ -284,6 +289,12 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginTop: 4,
   },
+  fraudTypeText: {
+    fontSize: 14,
+    color: "#EF4444",
+    fontWeight: "600",
+    marginTop: 4,
+  },
   predictionExplain: {
     fontSize: 15,
     color: "#475569",
@@ -337,49 +348,5 @@ const styles = StyleSheet.create({
   keywordEmpty: {
     fontSize: 14,
     color: "#64748B",
-  },
-  bottomSheet: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 8,
-    gap: 12,
-  },
-  primaryButton: {
-    minHeight: 56,
-    backgroundColor: "#EF4444",
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  primaryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  secondaryButton: {
-    minHeight: 56,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  secondaryButtonText: {
-    color: "#111827",
-    fontSize: 18,
-    fontWeight: "700",
   },
 });

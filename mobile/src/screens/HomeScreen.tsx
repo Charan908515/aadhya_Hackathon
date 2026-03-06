@@ -54,6 +54,15 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={styles.callFabText}>Report Cyber Fraud (Call 1930)</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.uploadFab}
+          activeOpacity={0.9}
+          onPress={() => navigation.navigate("ImageUpload")}
+        >
+          <Ionicons name="camera-outline" size={20} color="#FFFFFF" />
+          <Text style={styles.uploadFabText}>Upload Message Screenshot</Text>
+        </TouchableOpacity>
+
         <View style={styles.accessCard}>
           <View style={styles.accessRow}>
             <Ionicons name="shield-checkmark-outline" size={24} color="#111827" />
@@ -174,6 +183,28 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   callFabText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  uploadFab: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#6366F1",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    minHeight: 56,
+    gap: 8,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
+  uploadFabText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",

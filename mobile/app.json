@@ -17,7 +17,9 @@
       "permissions": [
         "READ_SMS",
         "RECEIVE_SMS",
-        "SEND_SMS"
+        "SEND_SMS",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.anonymous.fraudshield"
     }
