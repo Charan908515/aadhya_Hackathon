@@ -17,17 +17,19 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { GmailService } from "../services/GmailService";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTheme } from "../contexts/ThemeContext";
+import { ThemeColors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
-const verdictMeta = (level: SmsMessage["verdict"]["level"], t: any) => {
+const verdictMeta = (level: SmsMessage["verdict"]["level"], t: any, colors: ThemeColors) => {
   if (level === "SPAM") {
-    return { icon: "warning" as const, label: t.riskLevels.highRisk, color: "#EF4444" };
+    return { icon: "warning" as const, label: t.riskLevels.highRisk, color: colors.danger };
   }
   if (level === "SUSPICIOUS") {
-    return { icon: "alert-circle" as const, label: t.riskLevels.suspicious, color: "#F59E0B" };
+    return { icon: "alert-circle" as const, label: t.riskLevels.suspicious, color: colors.warning };
   }
-  return { icon: "checkmark-circle" as const, label: t.riskLevels.safe, color: "#10B981" };
+  return { icon: "checkmark-circle" as const, label: t.riskLevels.safe, color: colors.safe };
 };
 
 const snippet = (text: string) => {
@@ -38,6 +40,9 @@ const snippet = (text: string) => {
 export default function HomeScreen({ navigation }: Props) {
   const { messages, note, permissionState, requestAccess, refreshInbox, loadingSms } = useSms();
   const { t } = useLanguage();
+  const { colors, isDark, toggleTheme } = useTheme();
+  const styles = createStyles(colors);
+
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [gmailUser, setGmailUser] = useState<any>(null);
   const [gmailAccessToken, setGmailAccessToken] = useState<string | null>(null);
@@ -77,17 +82,22 @@ export default function HomeScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.headerRow}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>{t.home.title}</Text>
           <Text style={styles.headerSubtitle}>{t.home.subtitle}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.languageButton}
-          onPress={() => setShowLanguageSelector(true)}
-        >
-          <Ionicons name="globe-outline" size={20} color="#6366F1" />
-          <Text style={styles.languageButtonText}>{t.home.language}</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <TouchableOpacity style={styles.iconButton} onPress={toggleTheme}>
+            <Ionicons name={isDark ? "sunny-outline" : "moon-outline"} size={20} color={colors.accentIndigo} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.languageButton}
+            onPress={() => setShowLanguageSelector(true)}
+          >
+            <Ionicons name="globe-outline" size={20} color={colors.accentIndigo} />
+            <Text style={styles.languageButtonText}>{t.home.language}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -120,7 +130,7 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.accessCard}>
           <View style={styles.accessRow}>
-            <Ionicons name="shield-checkmark-outline" size={24} color="#111827" />
+            <Ionicons name="shield-checkmark-outline" size={24} color={colors.iconPrimary} />
             <View style={{ flex: 1 }}>
               <Text style={styles.accessTitle}>{t.home.scanInboxTitle}</Text>
               <Text style={styles.accessNote}>{note}</Text>
@@ -132,7 +142,7 @@ export default function HomeScreen({ navigation }: Props) {
                 style={{ padding: 4, opacity: loadingSms ? 0.5 : 1 }}
                 disabled={loadingSms}
               >
-                <Ionicons name="refresh" size={22} color="#111827" />
+                <Ionicons name="refresh" size={22} color={colors.iconPrimary} />
               </TouchableOpacity>
             )}
           </View>
@@ -142,7 +152,7 @@ export default function HomeScreen({ navigation }: Props) {
               activeOpacity={0.9}
               onPress={requestAccess}
             >
-              <Ionicons name="scan-outline" size={20} color="#FFFFFF" />
+              <Ionicons name="scan-outline" size={20} color={colors.iconInvert} />
               <Text style={styles.accessButtonText}>{t.home.grantPermissions}</Text>
             </TouchableOpacity>
           )}
@@ -151,7 +161,7 @@ export default function HomeScreen({ navigation }: Props) {
         <Text style={styles.sectionTitle}>{t.home.recentMessages}</Text>
 
         {recentScans.map((item) => {
-          const meta = verdictMeta(item.verdict.level, t);
+          const meta = verdictMeta(item.verdict.level, t, colors);
           const initials = item.address?.slice(0, 1).toUpperCase() || "?";
           const cardContent = (
             <View style={styles.cardRow}>
@@ -198,10 +208,10 @@ export default function HomeScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: 16,
@@ -218,25 +228,25 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: "#475569",
+    color: colors.textMuted,
     marginTop: 4,
   },
   callFab: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EF4444",
+    backgroundColor: colors.accentCoral,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 16,
     minHeight: 56,
     gap: 8,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.15,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -251,14 +261,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#6366F1",
+    backgroundColor: colors.accentIndigo,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 16,
     minHeight: 56,
     gap: 8,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.15,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -273,14 +283,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#10B981",
+    backgroundColor: colors.accentTeal,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 16,
     minHeight: 56,
     gap: 8,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.15,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -292,11 +302,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   accessCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 14,
     marginBottom: 18,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -311,16 +321,16 @@ const styles = StyleSheet.create({
   accessTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   accessNote: {
     fontSize: 14,
-    color: "#64748B",
+    color: colors.textDim,
     marginTop: 4,
   },
   accessButton: {
     minHeight: 56,
-    backgroundColor: "#111827",
+    backgroundColor: colors.iconPrimary,
     borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -328,23 +338,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   accessButtonText: {
-    color: "#FFFFFF",
+    color: colors.iconInvert,
     fontSize: 16,
     fontWeight: "700",
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
     marginTop: 8,
     marginBottom: 10,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -359,14 +369,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: colors.bgDeep,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   messageBody: {
     flex: 1,
@@ -386,18 +396,18 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16,
-    color: "#111827",
+    color: colors.textPrimary,
     fontWeight: "500",
     flex: 1,
   },
   cardTime: {
     fontSize: 12,
-    color: "#64748B",
+    color: colors.textDim,
   },
   sender: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
     flex: 1,
   },
   riskBadge: {
@@ -412,13 +422,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: colors.bgDeep,
     borderRadius: 20,
     gap: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   languageButtonText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#6366F1",
+    color: colors.accentIndigo,
+  },
+  iconButton: {
+    padding: 8,
+    backgroundColor: colors.bgDeep,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

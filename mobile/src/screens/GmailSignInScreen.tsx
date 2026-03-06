@@ -5,11 +5,15 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { GmailService } from '../services/GmailService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeColors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, "GmailSignIn">;
 
 export default function GmailSignInScreen({ navigation }: Props) {
     const { t } = useLanguage();
+    const { colors, isDark } = useTheme();
+    const styles = createStyles(colors, isDark);
     const [existingUser, setExistingUser] = useState<any>(null);
 
     useEffect(() => {
@@ -48,7 +52,7 @@ export default function GmailSignInScreen({ navigation }: Props) {
         <SafeAreaView style={styles.screen}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#0F172A" />
+                    <Ionicons name="arrow-back" size={24} color={colors.iconPrimary} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t.gmail.title}</Text>
                 <View style={{ width: 40 }} />
@@ -56,7 +60,7 @@ export default function GmailSignInScreen({ navigation }: Props) {
 
             <View style={styles.content}>
                 <View style={styles.iconContainer}>
-                    <Ionicons name="mail" size={64} color="#EF4444" />
+                    <Ionicons name="mail" size={64} color={colors.danger} />
                 </View>
                 <Text style={styles.title}>{t.gmail.scanTitle}</Text>
                 <Text style={styles.subtitle}>
@@ -65,15 +69,15 @@ export default function GmailSignInScreen({ navigation }: Props) {
 
                 <View style={styles.featureList}>
                     <View style={styles.featureItem}>
-                        <Ionicons name="shield-checkmark" size={24} color="#10B981" />
+                        <Ionicons name="shield-checkmark" size={24} color={colors.safe} />
                         <Text style={styles.featureText}>{t.gmail.feature1}</Text>
                     </View>
                     <View style={styles.featureItem}>
-                        <Ionicons name="lock-closed" size={24} color="#10B981" />
+                        <Ionicons name="lock-closed" size={24} color={colors.safe} />
                         <Text style={styles.featureText}>{t.gmail.feature2}</Text>
                     </View>
                     <View style={styles.featureItem}>
-                        <Ionicons name="eye-off" size={24} color="#10B981" />
+                        <Ionicons name="eye-off" size={24} color={colors.safe} />
                         <Text style={styles.featureText}>{t.gmail.feature3}</Text>
                     </View>
                 </View>
@@ -85,18 +89,18 @@ export default function GmailSignInScreen({ navigation }: Props) {
                         </Text>
 
                         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
-                            <Ionicons name="mail" size={20} color="#FFFFFF" />
+                            <Ionicons name="mail" size={20} color={colors.iconInvert} />
                             <Text style={styles.signInText}>{t.gmail.continueAndScan}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.switchAccountButton} onPress={handleSignOut} activeOpacity={0.8}>
-                            <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+                            <Ionicons name="log-out-outline" size={20} color={colors.danger} />
                             <Text style={styles.switchAccountText}>{t.gmail.signOutSwitch}</Text>
                         </TouchableOpacity>
                     </View>
                 ) : (
                     <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
-                        <Ionicons name="logo-google" size={20} color="#FFFFFF" />
+                        <Ionicons name="logo-google" size={20} color={colors.iconInvert} />
                         <Text style={styles.signInText}>{t.gmail.signInWithGoogle}</Text>
                     </TouchableOpacity>
                 )}
@@ -106,10 +110,10 @@ export default function GmailSignInScreen({ navigation }: Props) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: colors.background,
     },
     header: {
         flexDirection: 'row',
@@ -120,9 +124,9 @@ const styles = StyleSheet.create({
     },
     backButton: {
         padding: 8,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.bgCard,
         borderRadius: 20,
-        shadowColor: '#000',
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#0F172A',
+        color: colors.textPrimary,
     },
     content: {
         flex: 1,
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
     iconContainer: {
         width: 100,
         height: 100,
-        backgroundColor: '#FEE2E2',
+        backgroundColor: isDark ? `${colors.danger}22` : '#FEE2E2',
         borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
@@ -152,23 +156,23 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#0F172A',
+        color: colors.textPrimary,
         marginBottom: 12,
     },
     subtitle: {
         fontSize: 16,
-        color: '#475569',
+        color: colors.textMuted,
         textAlign: 'center',
         marginBottom: 40,
         lineHeight: 24,
     },
     featureList: {
         width: '100%',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.bgCard,
         borderRadius: 16,
         padding: 20,
         marginBottom: 40,
-        shadowColor: '#000',
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.05,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 4 },
@@ -182,7 +186,7 @@ const styles = StyleSheet.create({
     },
     featureText: {
         fontSize: 15,
-        color: '#334155',
+        color: colors.textPrimary,
         fontWeight: '500',
         flex: 1,
     },
@@ -190,20 +194,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#0F172A',
+        backgroundColor: colors.iconPrimary,
         paddingVertical: 16,
         paddingHorizontal: 24,
         borderRadius: 16,
         width: '100%',
         gap: 12,
-        shadowColor: '#0F172A',
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.3,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
         elevation: 4,
     },
     signInText: {
-        color: '#FFFFFF',
+        color: colors.iconInvert,
         fontSize: 18,
         fontWeight: '700',
     },
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
     },
     existingUserText: {
         fontSize: 14,
-        color: '#475569',
+        color: colors.textMuted,
         marginBottom: 8,
     },
     switchAccountButton: {
@@ -226,10 +230,10 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         width: '100%',
         gap: 8,
-        backgroundColor: '#FEE2E2',
+        backgroundColor: isDark ? `${colors.danger}22` : '#FEE2E2',
     },
     switchAccountText: {
-        color: '#EF4444',
+        color: colors.danger,
         fontSize: 16,
         fontWeight: '600',
     },

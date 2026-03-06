@@ -6,12 +6,16 @@ import type { RootStackParamList } from '../../App';
 import { GmailService, GmailMessage } from '../services/GmailService';
 import EmailListItem from '../components/EmailListItem';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeColors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, "GmailScan">;
 
 export default function GmailScanScreen({ navigation, route }: Props) {
     const { accessToken, userFullName, userEmail } = route.params;
     const { t } = useLanguage();
+    const { colors, isDark } = useTheme();
+    const styles = createStyles(colors, isDark);
 
     const [emails, setEmails] = useState<GmailMessage[]>([]);
     const [loading, setLoading] = useState(true);
@@ -58,11 +62,11 @@ export default function GmailScanScreen({ navigation, route }: Props) {
         <SafeAreaView style={styles.screen}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#0F172A" />
+                    <Ionicons name="arrow-back" size={24} color={colors.iconPrimary} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t.gmail.headerTitle}</Text>
                 <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-                    <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+                    <Ionicons name="log-out-outline" size={20} color={colors.danger} />
                 </TouchableOpacity>
             </View>
 
@@ -83,9 +87,9 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                             <Text style={styles.statValue}>{emails.length}</Text>
                             <Text style={styles.statLabel}>{t.gmail.scanned}</Text>
                         </View>
-                        <View style={[styles.statBox, { backgroundColor: fraudCount > 0 ? '#FEF2F2' : '#F8FAFC' }]}>
-                            <Text style={[styles.statValue, { color: fraudCount > 0 ? '#EF4444' : '#0F172A' }]}>{fraudCount}</Text>
-                            <Text style={[styles.statLabel, { color: fraudCount > 0 ? '#EF4444' : '#64748B' }]}>{t.gmail.suspicious}</Text>
+                        <View style={[styles.statBox, { backgroundColor: fraudCount > 0 ? (isDark ? `${colors.danger}33` : '#FEF2F2') : colors.bgMid }]}>
+                            <Text style={[styles.statValue, { color: fraudCount > 0 ? colors.danger : colors.textPrimary }]}>{fraudCount}</Text>
+                            <Text style={[styles.statLabel, { color: fraudCount > 0 ? colors.danger : colors.textDim }]}>{t.gmail.suspicious}</Text>
                         </View>
                     </View>
                 )}
@@ -93,7 +97,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
 
             {error ? (
                 <View style={styles.centerContainer}>
-                    <Ionicons name="warning" size={48} color="#EF4444" style={{ marginBottom: 16 }} />
+                    <Ionicons name="warning" size={48} color={colors.danger} style={{ marginBottom: 16 }} />
                     <Text style={styles.errorText}>{error}</Text>
                     <TouchableOpacity style={styles.retryButton} onPress={() => loadEmails()}>
                         <Text style={styles.retryButtonText}>{t.common.retry}</Text>
@@ -101,7 +105,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                 </View>
             ) : loading ? (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color="#10B981" />
+                    <ActivityIndicator size="large" color={colors.safe} />
                     <Text style={styles.loadingText}>{t.gmail.scanning}</Text>
                 </View>
             ) : (
@@ -110,7 +114,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={styles.listContent}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={() => loadEmails(true)} tintColor="#10B981" />
+                        <RefreshControl refreshing={refreshing} onRefresh={() => loadEmails(true)} tintColor={colors.safe} />
                     }
                     renderItem={({ item }) => (
                         <EmailListItem
@@ -132,7 +136,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     )}
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
-                            <Ionicons name="mail-open-outline" size={48} color="#94A3B8" style={{ marginBottom: 12 }} />
+                            <Ionicons name="mail-open-outline" size={48} color={colors.textDim} style={{ marginBottom: 12 }} />
                             <Text style={styles.emptyText}>{t.gmail.noEmails}</Text>
                         </View>
                     }
@@ -142,10 +146,10 @@ export default function GmailScanScreen({ navigation, route }: Props) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: colors.background,
     },
     header: {
         flexDirection: 'row',
@@ -156,9 +160,9 @@ const styles = StyleSheet.create({
     },
     backButton: {
         padding: 8,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.bgCard,
         borderRadius: 20,
-        shadowColor: '#000',
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
@@ -167,11 +171,11 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#0F172A',
+        color: colors.textPrimary,
     },
     signOutButton: {
         padding: 8,
-        backgroundColor: '#FEF2F2',
+        backgroundColor: isDark ? `${colors.danger}22` : '#FEF2F2',
         borderRadius: 20,
     },
     centerContainer: {
@@ -183,34 +187,34 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 16,
         fontSize: 16,
-        color: '#475569',
+        color: colors.textMuted,
         fontWeight: '500',
     },
     errorText: {
         fontSize: 16,
-        color: '#EF4444',
+        color: colors.danger,
         textAlign: 'center',
         marginBottom: 20,
     },
     retryButton: {
         paddingVertical: 12,
         paddingHorizontal: 24,
-        backgroundColor: '#10B981',
+        backgroundColor: colors.safe,
         borderRadius: 12,
     },
     retryButtonText: {
-        color: '#FFFFFF',
+        color: colors.iconInvert,
         fontSize: 16,
         fontWeight: '600',
     },
     userInfoCard: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.bgCard,
         marginHorizontal: 16,
         marginTop: 8,
         marginBottom: 16,
         padding: 16,
         borderRadius: 16,
-        shadowColor: '#000',
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.05,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 3 },
@@ -225,7 +229,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#10B981',
+        backgroundColor: colors.safe,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -237,11 +241,11 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#0F172A',
+        color: colors.textPrimary,
     },
     userEmail: {
         fontSize: 14,
-        color: '#64748B',
+        color: colors.textDim,
         marginTop: 2,
     },
     statsRow: {
@@ -249,12 +253,12 @@ const styles = StyleSheet.create({
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
-        borderTopColor: '#F1F5F9',
+        borderTopColor: colors.border,
         gap: 12,
     },
     statBox: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: colors.bgMid,
         padding: 12,
         borderRadius: 12,
         alignItems: 'center',
@@ -262,12 +266,12 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#0F172A',
+        color: colors.textPrimary,
     },
     statLabel: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#64748B',
+        color: colors.textDim,
         marginTop: 2,
     },
     listContent: {
@@ -282,6 +286,6 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
-        color: '#64748B',
+        color: colors.textDim,
     }
 });

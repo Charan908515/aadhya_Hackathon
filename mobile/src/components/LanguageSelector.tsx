@@ -11,6 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { languages } from '../locales';
 import { Language } from '../locales/types';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeColors } from '../theme';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -22,6 +24,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onClose,
 }) => {
   const { language, setLanguage, t } = useLanguage();
+  const { colors, isDark } = useTheme();
+  const styles = createStyles(colors, isDark);
 
   console.log('Languages available:', languages); // Debug log
 
@@ -43,7 +47,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <Text style={styles.languageEnglishName}>{item.name}</Text>
       </View>
       {language === item.code && (
-        <Ionicons name="checkmark" size={20} color="#6366F1" />
+        <Ionicons name="checkmark" size={20} color={colors.accentIndigo} />
       )}
     </TouchableOpacity>
   );
@@ -60,10 +64,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>{t.home.selectLanguage}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color="#6B7280" />
+              <Ionicons name="close" size={24} color={colors.textDim} />
             </TouchableOpacity>
           </View>
-          
+
           {/* Language List */}
           <View style={styles.languageList}>
             {languages.map((item) => (
@@ -80,7 +84,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                   <Text style={styles.languageEnglishName}>{item.name}</Text>
                 </View>
                 {language === item.code && (
-                  <Ionicons name="checkmark" size={20} color="#6366F1" />
+                  <Ionicons name="checkmark" size={20} color={colors.accentIndigo} />
                 )}
               </TouchableOpacity>
             ))}
@@ -91,7 +95,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -99,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: colors.bgCard,
     borderRadius: 20,
     maxHeight: '70%',
     width: '90%',
@@ -112,14 +116,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.textPrimary,
   },
   closeButton: {
     padding: 4,
@@ -135,10 +139,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.border,
   },
   selectedLanguageItem: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.bgMid,
   },
   languageInfo: {
     flex: 1,
@@ -146,11 +150,11 @@ const styles = StyleSheet.create({
   languageName: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#1F2937',
+    color: colors.textPrimary,
     marginBottom: 2,
   },
   languageEnglishName: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textDim,
   },
 });

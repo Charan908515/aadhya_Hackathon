@@ -13,13 +13,15 @@ import type { RootStackParamList } from "../../App";
 import { useSms } from "../data/SmsContext";
 import { SmsMessage } from "../data/sms";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { ThemeColors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Verdict">;
 
 const mockMessageText =
   "Dear User, your electricity bill is unpaid. Connection will be cut tonight. Call 9876543210 to update KYC.";
 
-const RedFlagText = () => (
+const RedFlagText = ({ styles }: { styles: any }) => (
   <Text style={styles.messageText}>
     Dear User, your electricity bill is <Text style={styles.redFlag}>unpaid</Text>. Connection will be{" "}
     <Text style={styles.redFlag}>cut tonight</Text>. Call 9876543210 to{" "}
@@ -27,23 +29,25 @@ const RedFlagText = () => (
   </Text>
 );
 
-const verdictMeta = (message: SmsMessage | null, t: any) => {
+const verdictMeta = (message: SmsMessage | null, t: any, colors: ThemeColors) => {
   if (!message) {
-    return { icon: "warning" as const, label: t.verdict.highRisk, color: "#EF4444", score: 92 };
+    return { icon: "warning" as const, label: t.verdict.highRisk, color: colors.danger, score: 92 };
   }
   const level = message.verdict.level;
   if (level === "SPAM") {
-    return { icon: "warning" as const, label: t.verdict.highRisk, color: "#EF4444", score: message.verdict.score };
+    return { icon: "warning" as const, label: t.verdict.highRisk, color: colors.danger, score: message.verdict.score };
   }
   if (level === "SUSPICIOUS") {
-    return { icon: "alert-circle" as const, label: t.verdict.suspicious, color: "#F59E0B", score: message.verdict.score };
+    return { icon: "alert-circle" as const, label: t.verdict.suspicious, color: colors.warning, score: message.verdict.score };
   }
-  return { icon: "checkmark-circle" as const, label: t.verdict.safe, color: "#10B981", score: message.verdict.score };
+  return { icon: "checkmark-circle" as const, label: t.verdict.safe, color: colors.safe, score: message.verdict.score };
 };
 
 export default function VerdictScreen({ navigation, route }: Props) {
   const { getMessageById } = useSms();
   const { t } = useLanguage();
+  const { colors, isDark } = useTheme();
+  const styles = createStyles(colors, isDark);
 
   // Either use the passed message object (from Gmail), fetch it by ID (from SMS), or use the image analysis result
   let message: SmsMessage | null = route.params?.message || getMessageById(route.params?.messageId);
@@ -65,7 +69,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
     };
   }
 
-  const meta = verdictMeta(message, t);
+  const meta = verdictMeta(message, t, colors);
   const keywords = message?.verdict.suspiciousKeywords ?? [];
 
   return (
@@ -77,7 +81,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
             onPress={() => navigation.goBack()}
             activeOpacity={0.9}
           >
-            <Ionicons name="arrow-back" size={22} color="#111827" />
+            <Ionicons name="arrow-back" size={22} color={colors.iconPrimary} />
             <Text style={styles.backText}>{t.common.back}</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t.verdict.title}</Text>
@@ -99,7 +103,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
 
         <View style={styles.messageBubble}>
           {message?.body === mockMessageText || !message ? (
-            <RedFlagText />
+            <RedFlagText styles={styles} />
           ) : (
             <Text style={styles.messageText}>{message.body}</Text>
           )}
@@ -132,14 +136,14 @@ export default function VerdictScreen({ navigation, route }: Props) {
         <Text style={styles.sectionTitle}>{t.verdict.evidence}</Text>
 
         <View style={styles.explainRow}>
-          <Ionicons name="time-outline" size={24} color="#EF4444" />
+          <Ionicons name="time-outline" size={24} color={colors.danger} />
           <Text style={styles.explainText}>
             {t.evidenceTypes.urgency}
           </Text>
         </View>
 
         <View style={styles.explainRow}>
-          <Ionicons name="call-outline" size={24} color="#EF4444" />
+          <Ionicons name="call-outline" size={24} color={colors.danger} />
           <Text style={styles.explainText}>
             {t.evidenceTypes.personalNumber}
           </Text>
@@ -164,10 +168,10 @@ export default function VerdictScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: 16,
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: colors.bgDeep,
     borderRadius: 16,
     paddingHorizontal: 12,
     minHeight: 44,
@@ -192,22 +196,22 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#111827",
+    color: colors.textPrimary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   threadHeader: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 14,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -217,23 +221,23 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: colors.bgDeep,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   sender: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
   },
   timeText: {
     fontSize: 13,
-    color: "#64748B",
+    color: colors.textDim,
     marginTop: 4,
   },
   riskPill: {
@@ -250,11 +254,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   messageBubble: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -262,27 +266,27 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
-    color: "#111827",
+    color: colors.textPrimary,
     lineHeight: 24,
   },
   redFlag: {
-    backgroundColor: "#FEE2E2",
-    color: "#EF4444",
+    backgroundColor: isDark ? `${colors.danger}33` : '#FEE2E2',
+    color: colors.danger,
     fontWeight: "800",
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
     marginTop: 8,
     marginBottom: 10,
   },
   predictionCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -303,24 +307,24 @@ const styles = StyleSheet.create({
   },
   predictionTitle: {
     fontSize: 14,
-    color: "#64748B",
+    color: colors.textDim,
     fontWeight: "600",
   },
   predictionLabel: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#111827",
+    color: colors.textPrimary,
     marginTop: 4,
   },
   fraudTypeText: {
     fontSize: 14,
-    color: "#EF4444",
+    color: colors.danger,
     fontWeight: "600",
     marginTop: 4,
   },
   predictionExplain: {
     fontSize: 15,
-    color: "#475569",
+    color: colors.textMuted,
     lineHeight: 22,
   },
   explainRow: {
@@ -331,16 +335,16 @@ const styles = StyleSheet.create({
   },
   explainText: {
     fontSize: 16,
-    color: "#111827",
+    color: colors.textPrimary,
     flex: 1,
     lineHeight: 22,
   },
   keywordsCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: colors.cardShadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
@@ -349,7 +353,7 @@ const styles = StyleSheet.create({
   keywordsTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   keywordRow: {
@@ -358,18 +362,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   keywordChip: {
-    backgroundColor: "#FEE2E2",
+    backgroundColor: isDark ? `${colors.danger}33` : '#FEE2E2',
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   keywordText: {
-    color: "#EF4444",
+    color: colors.danger,
     fontWeight: "700",
     fontSize: 12,
   },
   keywordEmpty: {
     fontSize: 14,
-    color: "#64748B",
+    color: colors.textDim,
   },
 });

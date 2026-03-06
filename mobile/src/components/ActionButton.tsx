@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
-import { colors, radius, spacing, typography } from "../theme";
+import { radius, spacing, typography, ThemeColors } from "../theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 type Props = {
   label: string;
@@ -10,6 +11,9 @@ type Props = {
 };
 
 export function ActionButton({ label, onPress, variant = "primary", style }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <Pressable
       onPress={onPress}
@@ -25,7 +29,7 @@ export function ActionButton({ label, onPress, variant = "primary", style }: Pro
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   base: {
     paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.md,

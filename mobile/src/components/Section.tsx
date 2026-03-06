@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors, spacing, typography } from "../theme";
+import { spacing, typography, ThemeColors } from "../theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 type Props = {
   title: string;
@@ -8,6 +9,9 @@ type Props = {
 };
 
 export function Section({ title, children }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>{title}</Text>
@@ -16,7 +20,7 @@ export function Section({ title, children }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   wrapper: {
     gap: spacing.sm,
   },

@@ -2,15 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GmailMessage } from "../services/GmailService";
+import { useTheme } from "../contexts/ThemeContext";
+import { ThemeColors } from "../theme";
 
-export const verdictMeta = (level: string, t: any) => {
+export const verdictMeta = (level: string, t: any, colors: ThemeColors) => {
     if (level === "SPAM") {
-        return { icon: "warning" as const, label: t?.riskLevels?.highRisk || "HIGH RISK", color: "#EF4444" };
+        return { icon: "warning" as const, label: t?.riskLevels?.highRisk || "HIGH RISK", color: colors.danger };
     }
     if (level === "SUSPICIOUS") {
-        return { icon: "alert-circle" as const, label: t?.riskLevels?.suspicious || "SUSPICIOUS", color: "#F59E0B" };
+        return { icon: "alert-circle" as const, label: t?.riskLevels?.suspicious || "SUSPICIOUS", color: colors.warning };
     }
-    return { icon: "checkmark-circle" as const, label: t?.riskLevels?.safe || "SAFE", color: "#10B981" };
+    return { icon: "checkmark-circle" as const, label: t?.riskLevels?.safe || "SAFE", color: colors.safe };
 };
 
 export function formatTime(timestamp: number): string {
@@ -29,7 +31,9 @@ type Props = {
 };
 
 export default function EmailListItem({ email, onPress, t }: Props) {
-    const meta = verdictMeta(email.verdict.level, t);
+    const { colors, isDark } = useTheme();
+    const styles = createStyles(colors, isDark);
+    const meta = verdictMeta(email.verdict.level, t, colors);
 
     // Extract just the name from 'Name <email@domain.com>'
     const senderNameMatch = email.sender.match(/^([^<]+)/);
@@ -79,13 +83,13 @@ export default function EmailListItem({ email, onPress, t }: Props) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
     card: {
-        backgroundColor: "#FFFFFF",
+        backgroundColor: colors.bgCard,
         borderRadius: 16,
         padding: 14,
         marginBottom: 12,
-        shadowColor: "#000",
+        shadowColor: colors.cardShadow,
         shadowOpacity: 0.08,
         shadowRadius: 6,
         shadowOffset: { width: 0, height: 3 },
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: "#E2E8F0",
+        backgroundColor: colors.bgMid,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 2,
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
     avatarText: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#0F172A",
+        color: colors.textPrimary,
     },
     messageBody: {
         flex: 1,
@@ -130,22 +134,22 @@ const styles = StyleSheet.create({
     sender: {
         fontSize: 15,
         fontWeight: "700",
-        color: "#0F172A",
+        color: colors.textPrimary,
         flex: 1,
     },
     subject: {
         fontSize: 14,
         fontWeight: "600",
-        color: "#334155",
+        color: colors.textPrimary,
     },
     snippetText: {
         fontSize: 13,
-        color: "#64748B",
+        color: colors.textDim,
         flex: 1,
     },
     cardTime: {
         fontSize: 12,
-        color: "#64748B",
+        color: colors.textDim,
     },
     riskBadge: {
         width: 24,

@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing, typography } from "../theme";
+import { radius, spacing, typography, ThemeColors } from "../theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 type Props = {
   title: string;
@@ -10,6 +11,9 @@ type Props = {
 };
 
 export function HistoryItem({ title, time, risk, score }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -24,7 +28,7 @@ export function HistoryItem({ title, time, risk, score }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   card: {
     backgroundColor: colors.bgCardAlt,
     borderRadius: radius.md,

@@ -19,6 +19,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getSystemPrompt } from '../locales';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeColors } from '../theme';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -39,6 +41,8 @@ export default function ImageUploadScreen() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const { t, language } = useLanguage();
+  const { colors, isDark } = useTheme();
+  const styles = createStyles(colors, isDark);
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -155,13 +159,13 @@ export default function ImageUploadScreen() {
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
       case 'SAFE':
-        return '#10B981';
+        return colors.safe;
       case 'SUSPICIOUS':
-        return '#F59E0B';
+        return colors.warning;
       case 'HIGH RISK':
-        return '#EF4444';
+        return colors.danger;
       default:
-        return '#6B7280';
+        return colors.textDim;
     }
   };
 
@@ -170,7 +174,7 @@ export default function ImageUploadScreen() {
       <View style={styles.container}>
         {/* Header */}
         <LinearGradient
-          colors={['#6366F1', '#8B5CF6']}
+          colors={isDark ? [colors.bgMid, colors.bgDeep] : ['#6366F1', '#8B5CF6']}
           style={styles.header}
         >
           <View style={styles.headerRow}>
@@ -178,7 +182,7 @@ export default function ImageUploadScreen() {
               onPress={() => navigation.goBack()}
               style={styles.backButton}
             >
-              <Ionicons name="arrow-back" size={20} color="white" />
+              <Ionicons name="arrow-back" size={20} color={isDark ? colors.iconPrimary : "white"} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>{t.imageUpload.title}</Text>
             <View style={styles.placeholder} />
@@ -190,7 +194,7 @@ export default function ImageUploadScreen() {
           <View style={styles.uploadSection}>
             <View style={styles.uploadHeader}>
               <View style={styles.uploadIcon}>
-                <Ionicons name="camera-outline" size={24} color="#6366F1" />
+                <Ionicons name="camera-outline" size={24} color={colors.accentIndigo} />
               </View>
               <View style={styles.uploadHeaderText}>
                 <Text style={styles.uploadTitle}>{t.imageUpload.title}</Text>
@@ -203,7 +207,7 @@ export default function ImageUploadScreen() {
                 onPress={pickImage}
                 style={styles.uploadPlaceholder}
               >
-                <Ionicons name="image-outline" size={56} color="#6366F1" />
+                <Ionicons name="image-outline" size={56} color={colors.accentIndigo} />
                 <Text style={styles.uploadPlaceholderText}>
                   {t.imageUpload.uploadPlaceholder}
                 </Text>
@@ -211,7 +215,7 @@ export default function ImageUploadScreen() {
                   {t.imageUpload.supports}
                 </Text>
                 <View style={styles.aiBadge}>
-                  <Ionicons name="shield-checkmark-outline" size={14} color="#6366F1" />
+                  <Ionicons name="shield-checkmark-outline" size={14} color={colors.accentIndigo} />
                   <Text style={styles.aiBadgeText}>{t.imageUpload.aiBadge}</Text>
                 </View>
               </TouchableOpacity>
@@ -233,7 +237,7 @@ export default function ImageUploadScreen() {
                     onPress={pickImage}
                     style={styles.changeButton}
                   >
-                    <Ionicons name="refresh-outline" size={20} color="#6B7280" />
+                    <Ionicons name="refresh-outline" size={20} color={colors.textDim} />
                     <Text style={styles.changeButtonText}>{t.imageUpload.changeImage}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -242,10 +246,10 @@ export default function ImageUploadScreen() {
                     style={styles.analyzeButton}
                   >
                     {isAnalyzing ? (
-                      <ActivityIndicator color="white" />
+                      <ActivityIndicator color={colors.iconInvert} />
                     ) : (
                       <>
-                        <Ionicons name="search-outline" size={20} color="white" />
+                        <Ionicons name="search-outline" size={20} color={colors.iconInvert} />
                         <Text style={styles.analyzeButtonText}>{t.imageUpload.analyze}</Text>
                       </>
                     )}
@@ -259,7 +263,7 @@ export default function ImageUploadScreen() {
           <View style={styles.infoCards}>
             <View style={styles.infoCard}>
               <View style={styles.infoIcon}>
-                <Ionicons name="shield-checkmark" size={16} color="#3B82F6" />
+                <Ionicons name="shield-checkmark" size={16} color={colors.accentBlue} />
               </View>
               <View style={styles.infoContent}>
                 <Text style={styles.infoTitle}>{t.imageUpload.fraudDetection}</Text>
@@ -269,7 +273,7 @@ export default function ImageUploadScreen() {
 
             <View style={styles.infoCard}>
               <View style={styles.infoIconGreen}>
-                <Ionicons name="checkmark-circle" size={16} color="#10B981" />
+                <Ionicons name="checkmark-circle" size={16} color={colors.safe} />
               </View>
               <View style={styles.infoContent}>
                 <Text style={styles.infoTitleGreen}>{t.imageUpload.multiPlatform}</Text>
@@ -360,10 +364,10 @@ export default function ImageUploadScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
   },
   header: {
     paddingTop: 16,
@@ -378,13 +382,13 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255, 255, 255, 0.2)',
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
-    color: 'white',
+    color: isDark ? colors.textPrimary : 'white',
     fontSize: 20,
     fontWeight: '600',
   },
@@ -399,11 +403,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   uploadSection: {
-    backgroundColor: 'white',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 24,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -417,7 +421,7 @@ const styles = StyleSheet.create({
   uploadIcon: {
     width: 48,
     height: 48,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.bgMid,
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
@@ -427,32 +431,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   uploadTitle: {
-    color: '#1F2937',
+    color: colors.textPrimary,
     fontSize: 18,
     fontWeight: '600',
   },
   uploadSubtitle: {
-    color: '#6B7280',
+    color: colors.textDim,
     fontSize: 14,
   },
   uploadPlaceholder: {
     borderWidth: 2,
-    borderColor: '#A5B4FC',
+    borderColor: colors.border,
     borderStyle: 'dashed',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.bgMid,
     borderRadius: 16,
     padding: 32,
     alignItems: 'center',
   },
   uploadPlaceholderText: {
-    color: '#374151',
+    color: colors.textMuted,
     marginTop: 16,
     textAlign: 'center',
     fontWeight: '500',
     fontSize: 16,
   },
   uploadPlaceholderSubtext: {
-    color: '#6B7280',
+    color: colors.textDim,
     fontSize: 14,
     marginTop: 4,
     textAlign: 'center',
@@ -461,13 +465,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 12,
-    backgroundColor: '#E0E7FF',
+    backgroundColor: colors.bgDeep,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 16,
   },
   aiBadgeText: {
-    color: '#4F46E5',
+    color: colors.accentIndigo,
     fontSize: 12,
     marginLeft: 4,
     fontWeight: '500',
@@ -500,7 +504,7 @@ const styles = StyleSheet.create({
   },
   changeButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgDeep,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -508,13 +512,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   changeButtonText: {
-    color: '#374151',
+    color: colors.textMuted,
     fontWeight: '500',
     marginLeft: 8,
   },
   analyzeButton: {
     flex: 1,
-    backgroundColor: '#6366F1',
+    backgroundColor: colors.accentIndigo,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -522,7 +526,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   analyzeButtonText: {
-    color: 'white',
+    color: colors.iconInvert,
     fontWeight: '500',
     marginLeft: 8,
   },
@@ -530,7 +534,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoCard: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.bgDeep,
     borderRadius: 12,
     padding: 16,
     flexDirection: 'row',
@@ -539,7 +543,7 @@ const styles = StyleSheet.create({
   infoIcon: {
     width: 32,
     height: 32,
-    backgroundColor: '#DBEAFE',
+    backgroundColor: colors.bgMid,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -548,7 +552,7 @@ const styles = StyleSheet.create({
   infoIconGreen: {
     width: 32,
     height: 32,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: isDark ? `${colors.safe}33` : '#D1FAE5',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -558,30 +562,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoTitle: {
-    color: '#1E3A8A',
+    color: colors.textPrimary,
     fontWeight: '500',
     fontSize: 14,
   },
   infoSubtitle: {
-    color: '#3B82F6',
+    color: colors.accentBlue,
     fontSize: 12,
     marginTop: 4,
   },
   infoTitleGreen: {
-    color: '#064E3B',
+    color: colors.textPrimary,
     fontWeight: '500',
     fontSize: 14,
   },
   infoSubtitleGreen: {
-    color: '#10B981',
+    color: colors.safe,
     fontSize: 12,
     marginTop: 4,
   },
   resultsSection: {
-    backgroundColor: 'white',
+    backgroundColor: colors.bgCard,
     borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
+    shadowColor: colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -594,7 +598,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   resultsTitle: {
-    color: '#1F2937',
+    color: colors.textPrimary,
     fontSize: 18,
     fontWeight: '600',
   },
@@ -611,54 +615,54 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   resultSectionTitle: {
-    color: '#6B7280',
+    color: colors.textDim,
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
   },
   textContainer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgMid,
     padding: 12,
     borderRadius: 8,
   },
   extractedText: {
-    color: '#1F2937',
+    color: colors.textPrimary,
     fontSize: 14,
   },
   classificationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgMid,
     padding: 12,
     borderRadius: 8,
   },
   classificationText: {
-    color: '#1F2937',
+    color: colors.textPrimary,
     fontWeight: '500',
     fontSize: 14,
   },
   confidenceText: {
-    color: '#6B7280',
+    color: colors.textDim,
     fontSize: 14,
   },
   fraudTypeContainer: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: isDark ? `${colors.danger}33` : '#FEF2F2',
     padding: 12,
     borderRadius: 8,
   },
   fraudTypeText: {
-    color: '#991B1B',
+    color: colors.danger,
     fontWeight: '500',
     fontSize: 14,
   },
   explanationContainer: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.bgDeep,
     padding: 12,
     borderRadius: 8,
   },
   explanationText: {
-    color: '#1E3A8A',
+    color: colors.textPrimary,
     fontSize: 14,
   },
   actionButtons: {
@@ -668,24 +672,24 @@ const styles = StyleSheet.create({
   },
   viewDetailsButton: {
     flex: 1,
-    backgroundColor: '#6366F1',
+    backgroundColor: colors.accentIndigo,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
   },
   viewDetailsText: {
-    color: 'white',
+    color: colors.iconInvert,
     fontWeight: '500',
   },
   newAnalysisButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgDeep,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
   },
   newAnalysisText: {
-    color: '#374151',
+    color: colors.textMuted,
     fontWeight: '500',
   },
 });
