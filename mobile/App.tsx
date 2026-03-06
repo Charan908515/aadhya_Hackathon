@@ -11,7 +11,7 @@ import { LanguageProvider } from "./src/contexts/LanguageContext";
 
 export type RootStackParamList = {
   Home: undefined;
-  Verdict: { messageId?: string } | undefined;
+  Verdict: { messageId?: string, message?: any } | undefined;
   ImageUpload: undefined;
   GmailSignIn: undefined;
   GmailScan: { accessToken: string; userFullName?: string; userEmail?: string };

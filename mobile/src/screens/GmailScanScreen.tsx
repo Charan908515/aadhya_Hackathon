@@ -110,10 +110,16 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                             email={item}
                             t={t}
                             onPress={() => {
-                                // Here, you could navigate to a detailed view if needed, 
-                                // but we will keep it simple for now or map to existing VerdictScreen format 
-                                // However VerdictScreen expects messageId from local SMS DB.
-                                // For Hackathon scope, showing the badge is usually enough, or a custom modal.
+                                // Navigate to VerdictScreen, passing the Gmail message as a generic SmsMessage
+                                navigation.navigate("Verdict", {
+                                    message: {
+                                        id: item.id,
+                                        address: item.sender,
+                                        body: item.subject + "\n\n" + item.snippet,
+                                        date: item.date,
+                                        verdict: item.verdict
+                                    }
+                                });
                             }}
                         />
                     )}

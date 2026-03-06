@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -8,9 +8,26 @@ import { GmailService } from '../services/GmailService';
 type Props = NativeStackScreenProps<RootStackParamList, "GmailSignIn">;
 
 export default function GmailSignInScreen({ navigation }: Props) {
+    const [existingUser, setExistingUser] = useState<any>(null);
+
     useEffect(() => {
         GmailService.configure();
+        checkExistingAuth();
     }, []);
+
+    const checkExistingAuth = async () => {
+        const auth = await GmailService.getSignedInUser();
+        if (auth && auth.user) {
+            setExistingUser(auth.user);
+        } else {
+            setExistingUser(null);
+        }
+    };
+
+    const handleSignOut = async () => {
+        await GmailService.signOut();
+        setExistingUser(null);
+    };
 
     const handleSignIn = async () => {
         try {
@@ -59,10 +76,28 @@ export default function GmailSignInScreen({ navigation }: Props) {
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
-                    <Ionicons name="logo-google" size={20} color="#FFFFFF" />
-                    <Text style={styles.signInText}>Sign in with Google</Text>
-                </TouchableOpacity>
+                {existingUser ? (
+                    <View style={styles.existingUserContainer}>
+                        <Text style={styles.existingUserText}>
+                            Currently signed in as <Text style={{ fontWeight: 'bold' }}>{existingUser.email}</Text>
+                        </Text>
+
+                        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
+                            <Ionicons name="mail" size={20} color="#FFFFFF" />
+                            <Text style={styles.signInText}>Continue & Scan</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.switchAccountButton} onPress={handleSignOut} activeOpacity={0.8}>
+                            <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+                            <Text style={styles.switchAccountText}>Sign out / Switch Account</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
+                        <Ionicons name="logo-google" size={20} color="#FFFFFF" />
+                        <Text style={styles.signInText}>Sign in with Google</Text>
+                    </TouchableOpacity>
+                )}
 
             </View>
         </SafeAreaView>
@@ -169,5 +204,31 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 18,
         fontWeight: '700',
+    },
+    existingUserContainer: {
+        width: '100%',
+        alignItems: 'center',
+        gap: 16,
+    },
+    existingUserText: {
+        fontSize: 14,
+        color: '#475569',
+        marginBottom: 8,
+    },
+    switchAccountButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 16,
+        width: '100%',
+        gap: 8,
+        backgroundColor: '#FEE2E2',
+    },
+    switchAccountText: {
+        color: '#EF4444',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });

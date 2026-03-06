@@ -44,7 +44,9 @@ const verdictMeta = (message: SmsMessage | null, t: any) => {
 export default function VerdictScreen({ navigation, route }: Props) {
   const { getMessageById } = useSms();
   const { t } = useLanguage();
-  const message = getMessageById(route.params?.messageId);
+
+  // Either use the passed message object (from Gmail) or fetch it by ID (from SMS)
+  const message: SmsMessage | null = route.params?.message || getMessageById(route.params?.messageId);
   const meta = verdictMeta(message, t);
   const keywords = message?.verdict.suspiciousKeywords ?? [];
 

@@ -53,9 +53,11 @@ export default function HomeScreen({ navigation }: Props) {
     checkGmailStatus();
   }, []);
 
-  const handleGmailScanPress = () => {
-    if (gmailAccessToken) {
-      navigation.navigate("GmailScan", { accessToken: gmailAccessToken, userFullName: gmailUser?.name, userEmail: gmailUser?.email });
+  const handleGmailScanPress = async () => {
+    // Check current status right before pressing to ensure we have the latest
+    const auth = await GmailService.getSignedInUser();
+    if (auth && auth.accessToken) {
+      navigation.navigate("GmailScan", { accessToken: auth.accessToken, userFullName: auth.user?.name || undefined, userEmail: auth.user?.email || undefined });
     } else {
       navigation.navigate("GmailSignIn");
     }
