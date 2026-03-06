@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -13,17 +13,19 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../App";
 import { useSms } from "../data/SmsContext";
 import { formatTime, SmsMessage } from "../data/sms";
+import { useLanguage } from "../contexts/LanguageContext";
+import { LanguageSelector } from "../components/LanguageSelector";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
-const verdictMeta = (level: SmsMessage["verdict"]["level"]) => {
+const verdictMeta = (level: SmsMessage["verdict"]["level"], t: any) => {
   if (level === "SPAM") {
-    return { icon: "warning" as const, label: "High Risk", color: "#EF4444" };
+    return { icon: "warning" as const, label: t.riskLevels.highRisk, color: "#EF4444" };
   }
   if (level === "SUSPICIOUS") {
-    return { icon: "alert-circle" as const, label: "Suspicious", color: "#F59E0B" };
+    return { icon: "alert-circle" as const, label: t.riskLevels.suspicious, color: "#F59E0B" };
   }
-  return { icon: "checkmark-circle" as const, label: "Good", color: "#10B981" };
+  return { icon: "checkmark-circle" as const, label: t.riskLevels.safe, color: "#10B981" };
 };
 
 const snippet = (text: string) => {
@@ -33,15 +35,24 @@ const snippet = (text: string) => {
 
 export default function HomeScreen({ navigation }: Props) {
   const { messages, note, permissionState, requestAccess, refreshInbox, loadingSms } = useSms();
+  const { t } = useLanguage();
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const recentScans = messages.slice(0, 6);
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.headerTitle}>Messages</Text>
-          <Text style={styles.headerSubtitle}>Fraud Shield is watching for scams</Text>
+          <Text style={styles.headerTitle}>{t.home.title}</Text>
+          <Text style={styles.headerSubtitle}>{t.home.subtitle}</Text>
         </View>
+        <TouchableOpacity
+          style={styles.languageButton}
+          onPress={() => setShowLanguageSelector(true)}
+        >
+          <Ionicons name="globe-outline" size={20} color="#6366F1" />
+          <Text style={styles.languageButtonText}>{t.home.language}</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -60,7 +71,7 @@ export default function HomeScreen({ navigation }: Props) {
           onPress={() => navigation.navigate("ImageUpload")}
         >
           <Ionicons name="camera-outline" size={20} color="#FFFFFF" />
-          <Text style={styles.uploadFabText}>Upload Message Screenshot</Text>
+          <Text style={styles.uploadFabText}>{t.home.imageAnalysis}</Text>
         </TouchableOpacity>
 
         <View style={styles.accessCard}>
@@ -88,15 +99,15 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={requestAccess}
             >
               <Ionicons name="scan-outline" size={20} color="#FFFFFF" />
-              <Text style={styles.accessButtonText}>Allow SMS Access</Text>
+              <Text style={styles.accessButtonText}>{t.home.grantPermissions}</Text>
             </TouchableOpacity>
           )}
         </View>
 
-        <Text style={styles.sectionTitle}>Recent Messages</Text>
+          <Text style={styles.sectionTitle}>{t.home.recentMessages}</Text>
 
         {recentScans.map((item) => {
-          const meta = verdictMeta(item.verdict.level);
+          const meta = verdictMeta(item.verdict.level, t);
           const initials = item.address?.slice(0, 1).toUpperCase() || "?";
           const cardContent = (
             <View style={styles.cardRow}>
@@ -134,6 +145,11 @@ export default function HomeScreen({ navigation }: Props) {
           );
         })}
       </ScrollView>
+      
+      <LanguageSelector
+        visible={showLanguageSelector}
+        onClose={() => setShowLanguageSelector(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -324,5 +340,19 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     alignItems: "center",
     justifyContent: "center",
+  },
+  languageButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#EEF2FF",
+    borderRadius: 20,
+    gap: 6,
+  },
+  languageButtonText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#6366F1",
   },
 });

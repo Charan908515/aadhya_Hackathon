@@ -17,6 +17,8 @@ import * as FileSystem from 'expo-file-system';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getSystemPrompt } from '../locales';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -36,6 +38,7 @@ export default function ImageUploadScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const { t, language } = useLanguage();
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -80,27 +83,7 @@ export default function ImageUploadScreen() {
           messages: [
             {
               role: 'system',
-              content: `You are a fraud detection expert. Analyze the image of a message and determine if it's fraudulent. 
-              
-              First, extract ALL visible text from the image accurately.
-              Then analyze it for fraud indicators such as:
-              - Urgent language or pressure tactics
-              - Requests for money, fees, or personal information
-              - Suspicious links or phone numbers
-              - Fake job offers or lottery prizes
-              - KYC/verification requests
-              - Impersonation of banks, government, or companies
-              - Too-good-to-be-true offers
-              
-              Respond ONLY with a valid JSON object (no markdown, no backticks) containing:
-              {
-                "text": "extracted text from image",
-                "isFraud": boolean,
-                "confidence": number (0-100),
-                "riskLevel": "SAFE" | "SUSPICIOUS" | "HIGH RISK",
-                "fraudType": "UPI Fraud" | "Job Scam" | "Lottery Scam" | "Phishing" | "Investment Scam" | "Loan Scam" | "Other Scam" | null,
-                "explanation": "brief explanation of classification"
-              }`
+              content: getSystemPrompt(language)
             },
             {
               role: 'user',
@@ -197,7 +180,7 @@ export default function ImageUploadScreen() {
             >
               <Ionicons name="arrow-back" size={20} color="white" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Image Analysis</Text>
+            <Text style={styles.headerTitle}>{t.imageUpload.title}</Text>
             <View style={styles.placeholder} />
           </View>
         </LinearGradient>
@@ -210,8 +193,8 @@ export default function ImageUploadScreen() {
                 <Ionicons name="camera-outline" size={24} color="#6366F1" />
               </View>
               <View style={styles.uploadHeaderText}>
-                <Text style={styles.uploadTitle}>Upload Message Screenshot</Text>
-                <Text style={styles.uploadSubtitle}>Analyze images from WhatsApp, Instagram, SMS, etc.</Text>
+                <Text style={styles.uploadTitle}>{t.imageUpload.title}</Text>
+                <Text style={styles.uploadSubtitle}>{t.imageUpload.subtitle}</Text>
               </View>
             </View>
             
@@ -222,14 +205,14 @@ export default function ImageUploadScreen() {
               >
                 <Ionicons name="image-outline" size={56} color="#6366F1" />
                 <Text style={styles.uploadPlaceholderText}>
-                  Tap to select an image
+                  {t.imageUpload.uploadPlaceholder}
                 </Text>
                 <Text style={styles.uploadPlaceholderSubtext}>
-                  Supports: JPG, PNG • Max 10MB
+                  {t.imageUpload.supports}
                 </Text>
                 <View style={styles.aiBadge}>
                   <Ionicons name="shield-checkmark-outline" size={14} color="#6366F1" />
-                  <Text style={styles.aiBadgeText}>AI-Powered Analysis</Text>
+                  <Text style={styles.aiBadgeText}>{t.imageUpload.aiBadge}</Text>
                 </View>
               </TouchableOpacity>
             ) : (
@@ -241,7 +224,7 @@ export default function ImageUploadScreen() {
                     resizeMode="cover"
                   />
                   <View style={styles.imageOverlay}>
-                    <Text style={styles.imageOverlayText}>Ready to analyze</Text>
+                    <Text style={styles.imageOverlayText}>{t.imageUpload.analyzing}</Text>
                   </View>
                 </View>
                 
@@ -251,7 +234,7 @@ export default function ImageUploadScreen() {
                     style={styles.changeButton}
                   >
                     <Ionicons name="refresh-outline" size={20} color="#6B7280" />
-                    <Text style={styles.changeButtonText}>Change</Text>
+                    <Text style={styles.changeButtonText}>{t.imageUpload.changeImage}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={analyzeImage}
@@ -263,7 +246,7 @@ export default function ImageUploadScreen() {
                     ) : (
                       <>
                         <Ionicons name="search-outline" size={20} color="white" />
-                        <Text style={styles.analyzeButtonText}>Analyze</Text>
+                        <Text style={styles.analyzeButtonText}>{t.imageUpload.analyze}</Text>
                       </>
                     )}
                   </TouchableOpacity>
@@ -279,8 +262,8 @@ export default function ImageUploadScreen() {
                 <Ionicons name="shield-checkmark" size={16} color="#3B82F6" />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Advanced Fraud Detection</Text>
-                <Text style={styles.infoSubtitle}>AI analyzes text patterns, links, and suspicious content</Text>
+                <Text style={styles.infoTitle}>{t.imageUpload.fraudDetection}</Text>
+                <Text style={styles.infoSubtitle}>{t.imageUpload.fraudDetectionDesc}</Text>
               </View>
             </View>
             
@@ -289,8 +272,8 @@ export default function ImageUploadScreen() {
                 <Ionicons name="checkmark-circle" size={16} color="#10B981" />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoTitleGreen}>Multi-Platform Support</Text>
-                <Text style={styles.infoSubtitleGreen}>Works with WhatsApp, Instagram, SMS, and messaging apps</Text>
+                <Text style={styles.infoTitleGreen}>{t.imageUpload.multiPlatform}</Text>
+                <Text style={styles.infoSubtitleGreen}>{t.imageUpload.multiPlatformDesc}</Text>
               </View>
             </View>
           </View>
@@ -299,7 +282,7 @@ export default function ImageUploadScreen() {
           {result && (
             <View style={styles.resultsSection}>
               <View style={styles.resultsHeader}>
-                <Text style={styles.resultsTitle}>Analysis Results</Text>
+                <Text style={styles.resultsTitle}>{t.imageUpload.results}</Text>
                 <View
                   style={[styles.riskBadge, { backgroundColor: getRiskColor(result.riskLevel) + '20' }]}
                 >
@@ -313,7 +296,7 @@ export default function ImageUploadScreen() {
 
               {/* Extracted Text */}
               <View style={styles.resultSection}>
-                <Text style={styles.resultSectionTitle}>Extracted Text:</Text>
+                <Text style={styles.resultSectionTitle}>{t.imageUpload.extractedText}</Text>
                 <View style={styles.textContainer}>
                   <Text style={styles.extractedText}>{result.text}</Text>
                 </View>
@@ -321,20 +304,20 @@ export default function ImageUploadScreen() {
 
               {/* Classification Details */}
               <View style={styles.resultSection}>
-                <Text style={styles.resultSectionTitle}>Classification:</Text>
+                <Text style={styles.resultSectionTitle}>{t.imageUpload.classification}</Text>
                 <View style={styles.classificationContainer}>
                   <Text style={styles.classificationText}>
-                    {result.isFraud ? 'Fraudulent' : 'Legitimate'}
+                    {result.isFraud ? t.verdict.fraudulent : t.verdict.legitimate}
                   </Text>
                   <Text style={styles.confidenceText}>
-                    {result.confidence}% confidence
+                    {result.confidence}% {t.imageUpload.confidence}
                   </Text>
                 </View>
               </View>
 
               {result.fraudType && (
                 <View style={styles.resultSection}>
-                  <Text style={styles.resultSectionTitle}>Fraud Type:</Text>
+                  <Text style={styles.resultSectionTitle}>{t.imageUpload.fraudType}</Text>
                   <View style={styles.fraudTypeContainer}>
                     <Text style={styles.fraudTypeText}>{result.fraudType}</Text>
                   </View>
@@ -342,7 +325,7 @@ export default function ImageUploadScreen() {
               )}
 
               <View style={styles.resultSection}>
-                <Text style={styles.resultSectionTitle}>Explanation:</Text>
+                <Text style={styles.resultSectionTitle}>{t.imageUpload.explanation}</Text>
                 <View style={styles.explanationContainer}>
                   <Text style={styles.explanationText}>{result.explanation}</Text>
                 </View>
@@ -354,7 +337,7 @@ export default function ImageUploadScreen() {
                   onPress={() => navigation.navigate('Verdict', { messageId: 'image-analysis' })}
                   style={styles.viewDetailsButton}
                 >
-                  <Text style={styles.viewDetailsText}>View Details</Text>
+                  <Text style={styles.viewDetailsText}>{t.imageUpload.viewDetails}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
@@ -363,7 +346,7 @@ export default function ImageUploadScreen() {
                   }}
                   style={styles.newAnalysisButton}
                 >
-                  <Text style={styles.newAnalysisText}>New Analysis</Text>
+                  <Text style={styles.newAnalysisText}>{t.imageUpload.newAnalysis}</Text>
                 </TouchableOpacity>
               </View>
             </View>

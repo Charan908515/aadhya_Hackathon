@@ -12,6 +12,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../App";
 import { useSms } from "../data/SmsContext";
 import { SmsMessage } from "../data/sms";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Verdict">;
 
@@ -26,24 +27,25 @@ const RedFlagText = () => (
   </Text>
 );
 
-const verdictMeta = (message: SmsMessage | null) => {
+const verdictMeta = (message: SmsMessage | null, t: any) => {
   if (!message) {
-    return { icon: "warning" as const, label: "High Risk Scam", color: "#EF4444", score: 92 };
+    return { icon: "warning" as const, label: t.verdict.highRisk, color: "#EF4444", score: 92 };
   }
   const level = message.verdict.level;
   if (level === "SPAM") {
-    return { icon: "warning" as const, label: "High Risk Scam", color: "#EF4444", score: message.verdict.score };
+    return { icon: "warning" as const, label: t.verdict.highRisk, color: "#EF4444", score: message.verdict.score };
   }
   if (level === "SUSPICIOUS") {
-    return { icon: "alert-circle" as const, label: "Suspicious", color: "#F59E0B", score: message.verdict.score };
+    return { icon: "alert-circle" as const, label: t.verdict.suspicious, color: "#F59E0B", score: message.verdict.score };
   }
-  return { icon: "checkmark-circle" as const, label: "Likely Safe", color: "#10B981", score: message.verdict.score };
+  return { icon: "checkmark-circle" as const, label: t.verdict.safe, color: "#10B981", score: message.verdict.score };
 };
 
 export default function VerdictScreen({ navigation, route }: Props) {
   const { getMessageById } = useSms();
+  const { t } = useLanguage();
   const message = getMessageById(route.params?.messageId);
-  const meta = verdictMeta(message);
+  const meta = verdictMeta(message, t);
   const keywords = message?.verdict.suspiciousKeywords ?? [];
 
   return (
@@ -56,9 +58,9 @@ export default function VerdictScreen({ navigation, route }: Props) {
             activeOpacity={0.9}
           >
             <Ionicons name="arrow-back" size={22} color="#111827" />
-            <Text style={styles.backText}>Back</Text>
+            <Text style={styles.backText}>{t.common.back}</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Conversation</Text>
+          <Text style={styles.headerTitle}>{t.verdict.title}</Text>
         </View>
 
         <View style={styles.threadHeader}>
@@ -89,7 +91,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
               <Ionicons name={meta.icon} size={20} color={meta.color} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.predictionTitle}>Prediction</Text>
+              <Text style={styles.predictionTitle}>{t.verdict.riskLevel}</Text>
               <Text style={styles.predictionLabel} numberOfLines={1}>
                 {meta.label} · {meta.score}% risk
               </Text>
@@ -106,7 +108,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
           </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Why this is risky</Text>
+        <Text style={styles.sectionTitle}>{t.verdict.evidence}</Text>
 
         <View style={styles.explainRow}>
           <Ionicons name="time-outline" size={24} color="#EF4444" />
@@ -123,7 +125,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
         </View>
 
         <View style={styles.keywordsCard}>
-          <Text style={styles.keywordsTitle}>Detected Keywords</Text>
+          <Text style={styles.keywordsTitle}>{t.verdict.evidence}</Text>
           <View style={styles.keywordRow}>
             {keywords.length === 0 ? (
               <Text style={styles.keywordEmpty}>No strong red flags detected.</Text>
