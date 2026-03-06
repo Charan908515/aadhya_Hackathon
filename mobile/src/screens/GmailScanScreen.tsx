@@ -38,6 +38,13 @@ export default function GmailScanScreen({ navigation, route }: Props) {
 
     useEffect(() => {
         loadEmails();
+
+        // Polling every 15 seconds to fetch new emails
+        const intervalId = setInterval(() => {
+            loadEmails(true);
+        }, 10000);
+
+        return () => clearInterval(intervalId);
     }, [accessToken]);
 
     const handleSignOut = async () => {
