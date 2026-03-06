@@ -15,6 +15,7 @@ import { useSms } from "../data/SmsContext";
 import { formatTime, SmsMessage } from "../data/sms";
 import { useLanguage } from "../contexts/LanguageContext";
 import { LanguageSelector } from "../components/LanguageSelector";
+import { GmailService } from "../services/GmailService";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -37,6 +38,29 @@ export default function HomeScreen({ navigation }: Props) {
   const { messages, note, permissionState, requestAccess, refreshInbox, loadingSms } = useSms();
   const { t } = useLanguage();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [gmailUser, setGmailUser] = useState<any>(null);
+  const [gmailAccessToken, setGmailAccessToken] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    GmailService.configure();
+    const checkGmailStatus = async () => {
+      const auth = await GmailService.getSignedInUser();
+      if (auth) {
+        setGmailUser(auth.user);
+        setGmailAccessToken(auth.accessToken);
+      }
+    };
+    checkGmailStatus();
+  }, []);
+
+  const handleGmailScanPress = () => {
+    if (gmailAccessToken) {
+      navigation.navigate("GmailScan", { accessToken: gmailAccessToken, userFullName: gmailUser?.name, userEmail: gmailUser?.email });
+    } else {
+      navigation.navigate("GmailSignIn");
+    }
+  };
+
   const recentScans = messages.slice(0, 6);
 
   return (
@@ -74,6 +98,15 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={styles.uploadFabText}>{t.home.imageAnalysis}</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.gmailFab}
+          activeOpacity={0.9}
+          onPress={handleGmailScanPress}
+        >
+          <Ionicons name="mail-outline" size={20} color="#FFFFFF" />
+          <Text style={styles.gmailFabText}>Scan Gmail for Scams</Text>
+        </TouchableOpacity>
+
         <View style={styles.accessCard}>
           <View style={styles.accessRow}>
             <Ionicons name="shield-checkmark-outline" size={24} color="#111827" />
@@ -104,7 +137,7 @@ export default function HomeScreen({ navigation }: Props) {
           )}
         </View>
 
-          <Text style={styles.sectionTitle}>{t.home.recentMessages}</Text>
+        <Text style={styles.sectionTitle}>{t.home.recentMessages}</Text>
 
         {recentScans.map((item) => {
           const meta = verdictMeta(item.verdict.level, t);
@@ -145,7 +178,7 @@ export default function HomeScreen({ navigation }: Props) {
           );
         })}
       </ScrollView>
-      
+
       <LanguageSelector
         visible={showLanguageSelector}
         onClose={() => setShowLanguageSelector(false)}
@@ -221,6 +254,28 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   uploadFabText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  gmailFab: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#10B981",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    minHeight: 56,
+    gap: 8,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
+  gmailFabText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
