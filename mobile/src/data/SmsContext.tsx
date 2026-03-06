@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   demoMessages,
   PermissionState,
@@ -26,6 +27,28 @@ export function SmsProvider({ children }: { children: React.ReactNode }) {
   const [loadingSms, setLoadingSms] = useState(false);
   const [messages, setMessages] = useState<SmsMessage[]>(demoMessages);
   const [note, setNote] = useState("Tap scan to check your SMS inbox for scams.");
+
+  // Load previous permission state on mount
+  useEffect(() => {
+    const loadPermission = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("@permission_state");
+        if (stored === "granted" || stored === "denied" || stored === "unavailable") {
+          setPermissionState(stored as PermissionState);
+          if (stored === "granted") {
+            refreshInbox();
+          } else if (stored === "denied") {
+            setNote("Permission denied. Allow SMS access to scan real messages.");
+          } else {
+            setNote("SMS inbox reading works only on Android devices.");
+          }
+        }
+      } catch (err) {
+        // Ignore read errors
+      }
+    };
+    loadPermission();
+  }, []);
 
   useEffect(() => {
     if (!smsEventEmitter) {
@@ -68,6 +91,9 @@ export function SmsProvider({ children }: { children: React.ReactNode }) {
     try {
       setPermissionState("requesting");
       const result = await requestSmsPermissions();
+
+      await AsyncStorage.setItem("@permission_state", result);
+
       if (result === "denied") {
         setPermissionState("denied");
         setNote("Permission denied. Allow SMS access to scan real messages.");

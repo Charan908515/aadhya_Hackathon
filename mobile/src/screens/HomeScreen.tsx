@@ -16,6 +16,7 @@ import { formatTime, SmsMessage } from "../data/sms";
 import { useLanguage } from "../contexts/LanguageContext";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { GmailService } from "../services/GmailService";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -43,15 +44,23 @@ export default function HomeScreen({ navigation }: Props) {
 
   React.useEffect(() => {
     GmailService.configure();
-    const checkGmailStatus = async () => {
-      const auth = await GmailService.getSignedInUser();
-      if (auth) {
-        setGmailUser(auth.user);
-        setGmailAccessToken(auth.accessToken);
-      }
-    };
-    checkGmailStatus();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkGmailStatus = async () => {
+        const auth = await GmailService.getSignedInUser();
+        if (auth && auth.user) {
+          setGmailUser(auth.user);
+          setGmailAccessToken(auth.accessToken);
+        } else {
+          setGmailUser(null);
+          setGmailAccessToken(null);
+        }
+      };
+      checkGmailStatus();
+    }, [])
+  );
 
   const handleGmailScanPress = async () => {
     // Check current status right before pressing to ensure we have the latest

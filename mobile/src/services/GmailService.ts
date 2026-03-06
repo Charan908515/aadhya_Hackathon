@@ -58,23 +58,21 @@ export class GmailService {
 
   static async getSignedInUser() {
     try {
+      // Ensure configure is called before any operations
+      this.configure();
+
       // First check if there falls back to a Play Services error
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-      // Check if user is already signed in quietly
-      const isSignedIn = await GoogleSignin.isSignedIn();
-      if (!isSignedIn) {
-        return null;
-      }
-
-      // Attempt to restore previous session silently (refreshes tokens if needed)
+      // Attempt to restore previous session silently (refreshes tokens if needed).
+      // We do NOT use isSignedIn() here because on cold boot it may falsely return false
+      // before signInSilently() has a chance to restore the token.
       const userInfo = await GoogleSignin.signInSilently();
 
       if (userInfo) {
         const tokens = await GoogleSignin.getTokens();
         return {
-          accessToken: tokens.accessToken,
-          user: userInfo.data?.user || userInfo.user // Handle different versions of the lib
+          user: userInfo.data?.user || (userInfo as any).user // Handle different versions of the lib
         }
       }
       return null;
