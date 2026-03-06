@@ -115,14 +115,14 @@ export default function HomeScreen({ navigation }: Props) {
           onPress={handleGmailScanPress}
         >
           <Ionicons name="mail-outline" size={20} color="#FFFFFF" />
-          <Text style={styles.gmailFabText}>Scan Gmail for Scams</Text>
+          <Text style={styles.gmailFabText}>{t.gmail.headerTitle}</Text>
         </TouchableOpacity>
 
         <View style={styles.accessCard}>
           <View style={styles.accessRow}>
             <Ionicons name="shield-checkmark-outline" size={24} color="#111827" />
             <View style={{ flex: 1 }}>
-              <Text style={styles.accessTitle}>Scan your inbox</Text>
+              <Text style={styles.accessTitle}>{t.home.scanInboxTitle}</Text>
               <Text style={styles.accessNote}>{note}</Text>
             </View>
             {permissionState === "granted" && (

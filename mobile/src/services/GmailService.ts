@@ -72,6 +72,7 @@ export class GmailService {
       if (userInfo) {
         const tokens = await GoogleSignin.getTokens();
         return {
+          accessToken: tokens.accessToken,
           user: userInfo.data?.user || (userInfo as any).user // Handle different versions of the lib
         }
       }

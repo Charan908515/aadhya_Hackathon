@@ -53,7 +53,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#0F172A" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Gmail Scan</Text>
+                <Text style={styles.headerTitle}>{t.gmail.headerTitle}</Text>
                 <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
                     <Ionicons name="log-out-outline" size={20} color="#EF4444" />
                 </TouchableOpacity>
@@ -66,7 +66,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.userName}>{userFullName || 'Google User'}</Text>
-                        <Text style={styles.userEmail}>{userEmail || 'Signed in'}</Text>
+                        <Text style={styles.userEmail}>{userEmail || t.gmail.signedIn}</Text>
                     </View>
                 </View>
 
@@ -74,11 +74,11 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     <View style={styles.statsRow}>
                         <View style={styles.statBox}>
                             <Text style={styles.statValue}>{emails.length}</Text>
-                            <Text style={styles.statLabel}>Scanned</Text>
+                            <Text style={styles.statLabel}>{t.gmail.scanned}</Text>
                         </View>
                         <View style={[styles.statBox, { backgroundColor: fraudCount > 0 ? '#FEF2F2' : '#F8FAFC' }]}>
                             <Text style={[styles.statValue, { color: fraudCount > 0 ? '#EF4444' : '#0F172A' }]}>{fraudCount}</Text>
-                            <Text style={[styles.statLabel, { color: fraudCount > 0 ? '#EF4444' : '#64748B' }]}>Suspicious</Text>
+                            <Text style={[styles.statLabel, { color: fraudCount > 0 ? '#EF4444' : '#64748B' }]}>{t.gmail.suspicious}</Text>
                         </View>
                     </View>
                 )}
@@ -89,13 +89,13 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     <Ionicons name="warning" size={48} color="#EF4444" style={{ marginBottom: 16 }} />
                     <Text style={styles.errorText}>{error}</Text>
                     <TouchableOpacity style={styles.retryButton} onPress={() => loadEmails()}>
-                        <Text style={styles.retryButtonText}>Retry</Text>
+                        <Text style={styles.retryButtonText}>{t.common.retry}</Text>
                     </TouchableOpacity>
                 </View>
             ) : loading ? (
                 <View style={styles.centerContainer}>
                     <ActivityIndicator size="large" color="#10B981" />
-                    <Text style={styles.loadingText}>Scanning your inbox with local AI...</Text>
+                    <Text style={styles.loadingText}>{t.gmail.scanning}</Text>
                 </View>
             ) : (
                 <FlatList
@@ -126,7 +126,7 @@ export default function GmailScanScreen({ navigation, route }: Props) {
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
                             <Ionicons name="mail-open-outline" size={48} color="#94A3B8" style={{ marginBottom: 12 }} />
-                            <Text style={styles.emptyText}>No recent emails found.</Text>
+                            <Text style={styles.emptyText}>{t.gmail.noEmails}</Text>
                         </View>
                     }
                 />

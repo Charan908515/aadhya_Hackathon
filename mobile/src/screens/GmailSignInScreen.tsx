@@ -4,10 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { GmailService } from '../services/GmailService';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, "GmailSignIn">;
 
 export default function GmailSignInScreen({ navigation }: Props) {
+    const { t } = useLanguage();
     const [existingUser, setExistingUser] = useState<any>(null);
 
     useEffect(() => {
@@ -48,7 +50,7 @@ export default function GmailSignInScreen({ navigation }: Props) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#0F172A" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Connect Gmail</Text>
+                <Text style={styles.headerTitle}>{t.gmail.title}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -56,46 +58,46 @@ export default function GmailSignInScreen({ navigation }: Props) {
                 <View style={styles.iconContainer}>
                     <Ionicons name="mail" size={64} color="#EF4444" />
                 </View>
-                <Text style={styles.title}>Scan Your Inbox</Text>
+                <Text style={styles.title}>{t.gmail.scanTitle}</Text>
                 <Text style={styles.subtitle}>
-                    Securely connect your Gmail to detect phishing, scams, and deceptive emails using our local AI model.
+                    {t.gmail.scanSubtitle}
                 </Text>
 
                 <View style={styles.featureList}>
                     <View style={styles.featureItem}>
                         <Ionicons name="shield-checkmark" size={24} color="#10B981" />
-                        <Text style={styles.featureText}>Scanning is done purely locally.</Text>
+                        <Text style={styles.featureText}>{t.gmail.feature1}</Text>
                     </View>
                     <View style={styles.featureItem}>
                         <Ionicons name="lock-closed" size={24} color="#10B981" />
-                        <Text style={styles.featureText}>We only require read-only access.</Text>
+                        <Text style={styles.featureText}>{t.gmail.feature2}</Text>
                     </View>
                     <View style={styles.featureItem}>
                         <Ionicons name="eye-off" size={24} color="#10B981" />
-                        <Text style={styles.featureText}>Your emails are never stored.</Text>
+                        <Text style={styles.featureText}>{t.gmail.feature3}</Text>
                     </View>
                 </View>
 
                 {existingUser ? (
                     <View style={styles.existingUserContainer}>
                         <Text style={styles.existingUserText}>
-                            Currently signed in as <Text style={{ fontWeight: 'bold' }}>{existingUser.email}</Text>
+                            {t.gmail.signedInAs} <Text style={{ fontWeight: 'bold' }}>{existingUser.email}</Text>
                         </Text>
 
                         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
                             <Ionicons name="mail" size={20} color="#FFFFFF" />
-                            <Text style={styles.signInText}>Continue & Scan</Text>
+                            <Text style={styles.signInText}>{t.gmail.continueAndScan}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.switchAccountButton} onPress={handleSignOut} activeOpacity={0.8}>
                             <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-                            <Text style={styles.switchAccountText}>Sign out / Switch Account</Text>
+                            <Text style={styles.switchAccountText}>{t.gmail.signOutSwitch}</Text>
                         </TouchableOpacity>
                     </View>
                 ) : (
                     <TouchableOpacity style={styles.signInButton} onPress={handleSignIn} activeOpacity={0.8}>
                         <Ionicons name="logo-google" size={20} color="#FFFFFF" />
-                        <Text style={styles.signInText}>Sign in with Google</Text>
+                        <Text style={styles.signInText}>{t.gmail.signInWithGoogle}</Text>
                     </TouchableOpacity>
                 )}
 

@@ -28,6 +28,7 @@ export interface Translations {
     openSettings: string;
     language: string;
     selectLanguage: string;
+    scanInboxTitle: string;
   };
   imageUpload: {
     title: string;
@@ -70,5 +71,30 @@ export interface Translations {
     safe: string;
     suspicious: string;
     highRisk: string;
+  };
+  fraudTypes: Record<string, string>;
+  explanations: Record<string, string>;
+  evidenceTypes: {
+    urgency: string;
+    personalNumber: string;
+    noStrongRedFlags: string;
+  };
+  gmail: {
+    title: string;
+    scanTitle: string;
+    scanSubtitle: string;
+    feature1: string;
+    feature2: string;
+    feature3: string;
+    signInWithGoogle: string;
+    signedInAs: string;
+    continueAndScan: string;
+    signOutSwitch: string;
+    headerTitle: string;
+    signedIn: string;
+    scanned: string;
+    suspicious: string;
+    scanning: string;
+    noEmails: string;
   };
 }

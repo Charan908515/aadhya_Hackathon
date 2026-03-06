@@ -45,8 +45,26 @@ export default function VerdictScreen({ navigation, route }: Props) {
   const { getMessageById } = useSms();
   const { t } = useLanguage();
 
-  // Either use the passed message object (from Gmail) or fetch it by ID (from SMS)
-  const message: SmsMessage | null = route.params?.message || getMessageById(route.params?.messageId);
+  // Either use the passed message object (from Gmail), fetch it by ID (from SMS), or use the image analysis result
+  let message: SmsMessage | null = route.params?.message || getMessageById(route.params?.messageId);
+  const analysisResult = route.params?.analysisResult;
+
+  if (analysisResult && !message) {
+    message = {
+      id: 'image-result',
+      address: 'Image Analysis',
+      date: Date.now(),
+      body: analysisResult.text,
+      verdict: {
+        level: analysisResult.riskLevel,
+        score: analysisResult.confidence,
+        explanation: analysisResult.explanation,
+        fraudType: analysisResult.fraudType || (analysisResult.isFraud ? "Other Scam" : "Likely Legitimate"),
+        suspiciousKeywords: []
+      }
+    };
+  }
+
   const meta = verdictMeta(message, t);
   const keywords = message?.verdict.suspiciousKeywords ?? [];
 
@@ -99,14 +117,15 @@ export default function VerdictScreen({ navigation, route }: Props) {
               </Text>
               {message?.verdict.fraudType && (
                 <Text style={styles.fraudTypeText}>
-                  Type: {message.verdict.fraudType}
+                  Type: {t.fraudTypes[message.verdict.fraudType] || message.verdict.fraudType}
                 </Text>
               )}
             </View>
           </View>
           <Text style={styles.predictionExplain}>
-            {message?.verdict.explanation ??
-              "This message matches common scam patterns and urgent language."}
+            {message?.verdict.explanation
+              ? (t.explanations[message.verdict.explanation] || message.verdict.explanation)
+              : t.explanations["This message matches common scam patterns and urgent language."]}
           </Text>
         </View>
 
@@ -115,14 +134,14 @@ export default function VerdictScreen({ navigation, route }: Props) {
         <View style={styles.explainRow}>
           <Ionicons name="time-outline" size={24} color="#EF4444" />
           <Text style={styles.explainText}>
-            Urgency: Trying to scare you into acting fast.
+            {t.evidenceTypes.urgency}
           </Text>
         </View>
 
         <View style={styles.explainRow}>
           <Ionicons name="call-outline" size={24} color="#EF4444" />
           <Text style={styles.explainText}>
-            Personal Number: Real bills don't ask you to call a 10-digit number.
+            {t.evidenceTypes.personalNumber}
           </Text>
         </View>
 
@@ -130,7 +149,7 @@ export default function VerdictScreen({ navigation, route }: Props) {
           <Text style={styles.keywordsTitle}>{t.verdict.evidence}</Text>
           <View style={styles.keywordRow}>
             {keywords.length === 0 ? (
-              <Text style={styles.keywordEmpty}>No strong red flags detected.</Text>
+              <Text style={styles.keywordEmpty}>{t.evidenceTypes.noStrongRedFlags}</Text>
             ) : (
               keywords.map((word) => (
                 <View key={word} style={styles.keywordChip}>

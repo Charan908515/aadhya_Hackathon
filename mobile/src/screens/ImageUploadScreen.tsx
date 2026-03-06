@@ -42,7 +42,7 @@ export default function ImageUploadScreen() {
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (permissionResult.granted === false) {
       Alert.alert('Permission Required', 'Please grant camera roll permissions to upload images.');
       return;
@@ -114,7 +114,7 @@ export default function ImageUploadScreen() {
 
       const data = await response.json();
       const content = data.choices[0].message.content;
-      
+
       // Clean up potential markdown formatting
       let cleanContent = content.trim();
       if (cleanContent.startsWith('```json')) {
@@ -122,29 +122,29 @@ export default function ImageUploadScreen() {
       } else if (cleanContent.startsWith('```')) {
         cleanContent = cleanContent.replace(/```\n?/g, '');
       }
-      
+
       try {
         const parsedResult = JSON.parse(cleanContent);
-        
+
         // Validate the result has required fields
         if (!parsedResult.text || typeof parsedResult.isFraud !== 'boolean') {
           throw new Error('Invalid response format');
         }
-        
+
         setResult(parsedResult);
       } catch (parseError) {
         console.error('Parse error:', parseError, '\nContent:', cleanContent);
         // Fallback result if JSON parsing fails
         Alert.alert(
-          'Analysis Complete', 
+          'Analysis Complete',
           'The image was analyzed, but the response format was unexpected. Please try again.'
         );
       }
-      
+
     } catch (error) {
       console.error('Analysis error:', error);
       Alert.alert(
-        'Analysis Failed', 
+        'Analysis Failed',
         error instanceof Error ? error.message : 'Failed to analyze the image. Please try again.'
       );
     } finally {
@@ -197,7 +197,7 @@ export default function ImageUploadScreen() {
                 <Text style={styles.uploadSubtitle}>{t.imageUpload.subtitle}</Text>
               </View>
             </View>
-            
+
             {!selectedImage ? (
               <TouchableOpacity
                 onPress={pickImage}
@@ -227,7 +227,7 @@ export default function ImageUploadScreen() {
                     <Text style={styles.imageOverlayText}>{t.imageUpload.analyzing}</Text>
                   </View>
                 </View>
-                
+
                 <View style={styles.buttonRow}>
                   <TouchableOpacity
                     onPress={pickImage}
@@ -266,7 +266,7 @@ export default function ImageUploadScreen() {
                 <Text style={styles.infoSubtitle}>{t.imageUpload.fraudDetectionDesc}</Text>
               </View>
             </View>
-            
+
             <View style={styles.infoCard}>
               <View style={styles.infoIconGreen}>
                 <Ionicons name="checkmark-circle" size={16} color="#10B981" />
@@ -334,7 +334,10 @@ export default function ImageUploadScreen() {
               {/* Action Buttons */}
               <View style={styles.actionButtons}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Verdict', { messageId: 'image-analysis' })}
+                  onPress={() => navigation.navigate('Verdict', {
+                    messageId: 'image-analysis',
+                    analysisResult: result
+                  })}
                   style={styles.viewDetailsButton}
                 >
                   <Text style={styles.viewDetailsText}>{t.imageUpload.viewDetails}</Text>
