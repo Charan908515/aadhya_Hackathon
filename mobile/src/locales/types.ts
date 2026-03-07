@@ -97,4 +97,17 @@ export interface Translations {
     scanning: string;
     noEmails: string;
   };
+  tutorial: {
+    welcome: string;
+    description: string;
+    selectLanguageText: string;
+    features: {
+      smsScanning: { title: string; desc: string };
+      imageAnalysis: { title: string; desc: string };
+      gmailScan: { title: string; desc: string };
+    };
+    getStarted: string;
+    next: string;
+    skip: string;
+  };
 }

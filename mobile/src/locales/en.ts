@@ -17,7 +17,7 @@ export const en: Translations = {
     no: 'No',
   },
   home: {
-    title: 'FraudShield',
+    title: 'NeuralShield',
     subtitle: 'AI-Powered Fraud Detection',
     scanMessages: 'Scan Messages',
     imageAnalysis: 'Image Analysis',
@@ -119,5 +119,27 @@ export const en: Translations = {
     suspicious: 'Suspicious',
     scanning: 'Scanning your inbox with local AI...',
     noEmails: 'No recent emails found.',
+  },
+  tutorial: {
+    welcome: 'Welcome to NeuralShield',
+    description: 'Your on-device AI security guard. Let\'s get your language set up.',
+    selectLanguageText: 'Select your preferred language:',
+    features: {
+      smsScanning: {
+        title: 'SMS Scam Protection',
+        desc: 'Detects phishing, job scams, and fraudulent messages directly on your device without sending text to the cloud.'
+      },
+      imageAnalysis: {
+        title: 'Image Analysis',
+        desc: 'Upload screenshots from WhatsApp, Instagram, or any app. We extract the text and analyze if it\'s a scam.'
+      },
+      gmailScan: {
+        title: 'Gmail Scanning',
+        desc: 'Connect your Gmail to securely scan your inbox for phishing emails and completely fake bills locally.'
+      }
+    },
+    getStarted: 'Get Started',
+    next: 'Next',
+    skip: 'Skip'
   }
 };
