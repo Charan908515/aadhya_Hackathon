@@ -368,6 +368,7 @@ const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingTop: 50, // Add top padding to avoid notification bar overlap
   },
   header: {
     paddingTop: 16,

@@ -22,30 +22,30 @@ export default function GmailScanScreen({ navigation, route }: Props) {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadEmails = async (isRefresh = false) => {
+    const loadEmails = async (isRefresh = false, isPolling = false) => {
         if (!accessToken) return;
 
         try {
-            if (isRefresh) setRefreshing(true);
-            else setLoading(true);
-            setError(null);
+            if (isRefresh && !isPolling) setRefreshing(true);
+            else if (!isRefresh && !isPolling) setLoading(true);
+            if (!isPolling) setError(null);
 
             const fetchedEmails = await GmailService.fetchRecentEmails(accessToken, 15);
             setEmails(fetchedEmails);
         } catch (err: any) {
-            setError(err.message || 'Failed to fetch emails');
+            if (!isPolling) setError(err.message || 'Failed to fetch emails');
         } finally {
-            if (isRefresh) setRefreshing(false);
-            else setLoading(false);
+            if (isRefresh && !isPolling) setRefreshing(false);
+            else if (!isRefresh && !isPolling) setLoading(false);
         }
     };
 
     useEffect(() => {
         loadEmails();
 
-        // Polling every 15 seconds to fetch new emails
+        // Polling every 10 seconds to fetch new emails silently
         const intervalId = setInterval(() => {
-            loadEmails(true);
+            loadEmails(true, true);
         }, 10000);
 
         return () => clearInterval(intervalId);
@@ -150,6 +150,7 @@ const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create
     screen: {
         flex: 1,
         backgroundColor: colors.background,
+        paddingTop: 50, // Add top padding to avoid notification bar overlap
     },
     header: {
         flexDirection: 'row',

@@ -114,6 +114,7 @@ const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create
     screen: {
         flex: 1,
         backgroundColor: colors.background,
+        paddingTop: 50, // Add top padding to avoid notification bar overlap
     },
     header: {
         flexDirection: 'row',
