@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  demoMessages,
   PermissionState,
   readInboxSms,
   requestSmsPermissions,
@@ -25,7 +24,7 @@ const SmsContext = createContext<SmsContextValue | null>(null);
 export function SmsProvider({ children }: { children: React.ReactNode }) {
   const [permissionState, setPermissionState] = useState<PermissionState>("idle");
   const [loadingSms, setLoadingSms] = useState(false);
-  const [messages, setMessages] = useState<SmsMessage[]>(demoMessages);
+  const [messages, setMessages] = useState<SmsMessage[]>([]);
   const [note, setNote] = useState("Tap scan to check your SMS inbox for scams.");
 
   // Load previous permission state on mount
@@ -80,7 +79,7 @@ export function SmsProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((item) => item.id === newMessage.id)) {
           return prev;
         }
-        return [newMessage, ...prev];
+        return [newMessage, ...prev].slice(0, 30);
       });
     });
 
@@ -110,7 +109,7 @@ export function SmsProvider({ children }: { children: React.ReactNode }) {
       await refreshInbox();
     } catch {
       setPermissionState("unavailable");
-      setNote("SMS access is unavailable in Expo Go. Showing demo messages.");
+      setNote("SMS access is unavailable in Expo Go.");
     }
   };
 
@@ -118,16 +117,52 @@ export function SmsProvider({ children }: { children: React.ReactNode }) {
     setLoadingSms(true);
     try {
       const inbox = await readInboxSms();
+      console.log("Refresh inbox got:", inbox.length, "messages");
+
       if (inbox.length === 0) {
-        setMessages(demoMessages);
-        setNote("No SMS found. Showing demo messages.");
+        setMessages([]);
+        setNote("No SMS found.");
       } else {
-        setMessages(inbox);
-        setNote(`Loaded ${inbox.length} messages from inbox.`);
+        // Check if these look like real messages (not demo)
+        const realMessages = inbox.filter(msg =>
+          msg.address !== "Demo Sender" &&
+          msg.body !== "(empty message)" &&
+          !msg.body.includes("demo") &&
+          msg.date > (Date.now() - 30 * 24 * 60 * 60 * 1000) // Messages from last 30 days
+        );
+
+        console.log("Real messages count:", realMessages.length);
+
+        if (realMessages.length === 0) {
+          setMessages([]);
+          setNote("No recent SMS found.");
+        } else {
+          // Only add new messages, don't replace existing ones
+          setMessages((prevMessages) => {
+            const existingIds = new Set(prevMessages.map(msg => msg.id));
+            const newMessages = realMessages.filter(msg => !existingIds.has(msg.id));
+
+            if (newMessages.length > 0) {
+              // Combine new messages with existing ones, keep only latest 30
+              const allMessages = [...newMessages, ...prevMessages];
+              const sortedMessages = allMessages.sort((a, b) => b.date - a.date);
+              const latest30Messages = sortedMessages.slice(0, 30);
+              setNote(`Loaded ${realMessages.length} real messages. ${newMessages.length} new messages detected. Showing latest 30.`);
+              return latest30Messages;
+            } else {
+              // Show latest 30 existing messages if no new ones
+              const sortedExisting = prevMessages.sort((a, b) => b.date - a.date);
+              const latest30Existing = sortedExisting.slice(0, 30);
+              setNote(`Loaded ${realMessages.length} real messages. No new messages. Showing latest 30.`);
+              return latest30Existing;
+            }
+          });
+        }
       }
-    } catch {
-      setMessages(demoMessages);
-      setNote("Inbox reading unavailable. Showing demo messages.");
+    } catch (error) {
+      console.error("SMS refresh failed:", error);
+      setMessages([]);
+      setNote("Inbox reading unavailable.");
     } finally {
       setLoadingSms(false);
     }

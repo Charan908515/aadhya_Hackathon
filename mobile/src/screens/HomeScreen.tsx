@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
-  const recentScans = messages.slice(0, 6);
+  const recentScans = messages.slice(0, 30);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -160,44 +160,56 @@ export default function HomeScreen({ navigation }: Props) {
 
         <Text style={styles.sectionTitle}>{t.home.recentMessages}</Text>
 
-        {recentScans.map((item) => {
-          const meta = verdictMeta(item.verdict.level, t, colors);
-          const initials = item.address?.slice(0, 1).toUpperCase() || "?";
-          const cardContent = (
-            <View style={styles.cardRow}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{initials}</Text>
-              </View>
-              <View style={styles.messageBody}>
-                <View style={styles.rowTop}>
-                  <Text style={styles.sender} numberOfLines={1}>
-                    {item.address}
-                  </Text>
-                  <Text style={styles.cardTime}>{formatTime(item.date)}</Text>
+        {permissionState !== "granted" ? (
+          <View style={styles.emptyStateContainer}>
+            <Ionicons name="lock-closed-outline" size={48} color={colors.textDim} />
+            <Text style={styles.emptyStateText}>{t.home.permissionsRequired}</Text>
+          </View>
+        ) : recentScans.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <Ionicons name="chatbox-outline" size={48} color={colors.textDim} />
+            <Text style={styles.emptyStateText}>{t.home.noMessages}</Text>
+          </View>
+        ) : (
+          recentScans.map((item) => {
+            const meta = verdictMeta(item.verdict.level, t, colors);
+            const initials = item.address?.slice(0, 1).toUpperCase() || "?";
+            const cardContent = (
+              <View style={styles.cardRow}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{initials}</Text>
                 </View>
-                <View style={styles.rowBottom}>
-                  <Text style={styles.cardText} numberOfLines={1}>
-                    {snippet(item.body)}
-                  </Text>
-                  <View style={[styles.riskBadge, { backgroundColor: `${meta.color}22` }]}>
-                    <Ionicons name={meta.icon} size={14} color={meta.color} />
+                <View style={styles.messageBody}>
+                  <View style={styles.rowTop}>
+                    <Text style={styles.sender} numberOfLines={1}>
+                      {item.address}
+                    </Text>
+                    <Text style={styles.cardTime}>{formatTime(item.date)}</Text>
+                  </View>
+                  <View style={styles.rowBottom}>
+                    <Text style={styles.cardText} numberOfLines={1}>
+                      {snippet(item.body)}
+                    </Text>
+                    <View style={[styles.riskBadge, { backgroundColor: `${meta.color}22` }]}>
+                      <Ionicons name={meta.icon} size={14} color={meta.color} />
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-          );
+            );
 
-          return (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              activeOpacity={0.9}
-              onPress={() => navigation.navigate("Verdict", { messageId: item.id })}
-            >
-              {cardContent}
-            </TouchableOpacity>
-          );
-        })}
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.card}
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate("Verdict", { messageId: item.id })}
+              >
+                {cardContent}
+              </TouchableOpacity>
+            );
+          })
+        )}
       </ScrollView>
 
       <LanguageSelector
@@ -442,5 +454,16 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
+  },
+  emptyStateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 32,
+    gap: 12,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: colors.textDim,
+    textAlign: "center",
   },
 });

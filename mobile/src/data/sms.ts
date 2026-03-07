@@ -288,24 +288,44 @@ export async function readInboxSms(): Promise<SmsMessage[]> {
     throw new Error("SMS reader not available");
   }
 
+  // Get messages with proper filtering for real device
   const filter = {
     box: "inbox",
-    maxCount: 80,
-    indexFrom: 0,
+    minDate: Date.now() - 7 * 24 * 60 * 60 * 1000,
+    maxCount: 30,
   };
+
+  console.log("Reading SMS with filter:", JSON.stringify(filter));
 
   return new Promise((resolve, reject) => {
     listFn(
       JSON.stringify(filter),
-      (fail: string) => reject(new Error(fail)),
-      (_count: number, smsList: string) => {
+      (fail: string) => {
+        console.error("SMS reading failed:", fail);
+        reject(new Error(fail));
+      },
+      (count: number, smsList: string) => {
+        console.log("SMS reading success. Count:", count, "List length:", smsList.length);
         try {
           const parsed = JSON.parse(smsList) as RawSmsMessage[];
-          const messages = parsed
+          console.log("Parsed SMS count:", parsed.length);
+          
+          // Filter out empty or invalid messages
+          const validMessages = parsed.filter(msg => 
+            msg.body && 
+            msg.body.trim().length > 0 && 
+            msg.address && 
+            msg.address.trim().length > 0
+          );
+          
+          console.log("Valid SMS count:", validMessages.length);
+          
+          const messages = validMessages
             .map((item, idx) => toMessage(item, idx))
-            .sort((a, b) => b.date - a.date);
+            .sort((a, b) => b.date - a.date); // Sort newest first
           resolve(messages);
-        } catch {
+        } catch (error) {
+          console.error("Failed to parse SMS:", error);
           reject(new Error("Failed to parse inbox SMS"));
         }
       }
